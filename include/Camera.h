@@ -20,4 +20,5 @@ protected:
 	glm::mat4 mProjectionTransform = glm::mat4();
 	glm::mat4 mProjectionViewTransform = glm::mat4(); //projectionview * projectionTransform - draw transform
 	void UpdateProjectViewTransform();
+
 };
