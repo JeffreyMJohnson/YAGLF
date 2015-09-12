@@ -3,8 +3,10 @@
 #include "GLFW\glfw3.h"
 #include "glm\vec4.hpp"
 #include "FlyCamera.h"
+#include "Transform.h"
 
 #include <iostream>
+
 
 
 using glm::vec4;
@@ -27,21 +29,21 @@ struct Window
 {
 	int height = 0;
 	int width = 0;
-	char* title = "";
+	const char* title = "";
 	GLFWwindow* handle = nullptr;
-	Color clearColor;
+	vec4 clearColor;
 };
 
 
 class GLFramework
 {
 public:
-	static bool Startup(int height, int width, char* title, Color clearColor);
-	static Color GetClearColor();
-	static void SetClearColor(Color color);
+	static bool Startup(const int height, const int width, const char* title, const vec4 clearColor);
+	static vec4 GetClearColor();
+	static void SetClearColor(vec4 color);
 	static void Cleanup();
 
 private:
 	static Window* sWindow;
-	static Camera* sCamera;
+	static FlyCamera* sCamera;
 };

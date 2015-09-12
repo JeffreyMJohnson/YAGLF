@@ -2,6 +2,7 @@
 
 void Camera::Update(const float deltaTime)
 {
+
 }
 
 
@@ -26,7 +27,7 @@ const glm::mat4 Camera::GetWorldTransform()
 
 const glm::mat4 Camera::GetView()
 {
-	return glm::inverse(mWorldTransform);
+	return mViewTransform;
 }
 
 const glm::mat4 Camera::GetProjection()

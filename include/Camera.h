@@ -15,8 +15,8 @@ public:
 
 
 protected:
-	glm::mat4 mWorldTransform = glm::mat4();//logical update
-	glm::mat4 mViewTransform = glm::mat4();//draw transform
+	glm::mat4 mWorldTransform = glm::mat4();//cam location, inverse view
+	glm::mat4 mViewTransform = glm::mat4();//lookat
 	glm::mat4 mProjectionTransform = glm::mat4();
 	glm::mat4 mProjectionViewTransform = glm::mat4(); //projectionview * projectionTransform - draw transform
 	void UpdateProjectViewTransform();

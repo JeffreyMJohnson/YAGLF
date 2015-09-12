@@ -9,6 +9,15 @@ FlyCamera::FlyCamera(GLFWwindow* window)
 	Keyboard::Init();
 }
 
+//void FlyCamera::Init(GLFWwindow * window, float speed, float FOV, float aspectRatio, float near, float far)
+//{
+//	mWindow = window;
+//	SetPerspective(FOV, aspectRatio, near, far);
+//	Mouse::Init();
+//	Mouse::SetMode(Mouse::Cursor_Mode::DISABLED);
+//	Keyboard::Init();
+//}
+
 void FlyCamera::SetPerspective(const float fov, const float aspectRatio, const float near, const float far)
 {
 	mProjectionTransform = glm::perspective(fov, aspectRatio, near, far);

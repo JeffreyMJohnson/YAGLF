@@ -1,9 +1,9 @@
 #include "..\include\GLFramework.h"
 
 Window* GLFramework::sWindow = new Window();
-Camera* GLFramework::sCamera = new FlyCamera();
+FlyCamera* GLFramework::sCamera;
 
-bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
+bool GLFramework::Startup(const int height, const int width, const char * title, const vec4 clearColor)
 {
 	if (!glfwInit())
 	{
@@ -15,11 +15,14 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 
 	sWindow->handle = glfwCreateWindow(height, width, title, nullptr, nullptr);
 
+
 	if (nullptr == sWindow->handle)
 	{
 		glfwTerminate();
 		return false;
 	}
+
+
 
 	glfwMakeContextCurrent(sWindow->handle);
 
@@ -36,9 +39,9 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 	return true;
 }
 
-Color GLFramework::GetClearColor()
+vec4 GLFramework::GetClearColor()
 {
-	Color result;
+	vec4 result;
 	if (nullptr != sWindow)
 	{
 		result = sWindow->clearColor;
@@ -46,7 +49,7 @@ Color GLFramework::GetClearColor()
 	return result;
 }
 
-void GLFramework::SetClearColor(Color color)
+void GLFramework::SetClearColor(vec4 color)
 {
 	if (nullptr != sWindow)
 	{
