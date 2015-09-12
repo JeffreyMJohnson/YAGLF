@@ -1,8 +1,8 @@
 #pragma once
-#include "Camera.h"
-#include "Mouse.h"
-#include "Keyboard.h"
-#include <GLFW\glfw3.h>
+#include "camera\Camera.h"
+#include "input\Mouse.h"
+#include "input\Keyboard.h"
+#include "GLFW\glfw3.h"
 #include <iostream>
 
 class FlyCamera : public Camera

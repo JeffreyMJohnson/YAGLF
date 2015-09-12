@@ -141,11 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Camera.h" />
-    <ClInclude Include="include\FlyCamera.h" />
+    <ClInclude Include="include\camera\Camera.h" />
+    <ClInclude Include="include\camera\FlyCamera.h" />
     <ClInclude Include="include\GLFramework.h" />
+    <ClInclude Include="include\gl_core_4_4\gl_core_4_4.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\Camera.cpp" />
+    <ClCompile Include="source\FlyCamera.cpp" />
     <ClCompile Include="source\GLFramework.cpp" />
     <ClCompile Include="source\gl_core_4_4.c" />
   </ItemGroup>

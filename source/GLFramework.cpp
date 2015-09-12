@@ -1,7 +1,7 @@
-#include "..\include\GLFramework.h"
+#include "GLFramework.h"
 
 Window* GLFramework::sWindow = new Window();
-Camera* GLFramework::sCamera = new FlyCamera();
+//Camera* GLFramework::sCamera = new FlyCamera();
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 {
