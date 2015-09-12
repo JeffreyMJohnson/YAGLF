@@ -1,8 +1,8 @@
 #pragma once
-#include "gl_core_4_4.h"
+#include "gl_core_4_4\gl_core_4_4.h"
 #include "GLFW\glfw3.h"
 #include "glm\vec4.hpp"
-#include "FlyCamera.h"
+#include "camera\FlyCamera.h"
 
 #include <iostream>
 

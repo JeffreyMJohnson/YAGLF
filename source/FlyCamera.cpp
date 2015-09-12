@@ -1,4 +1,4 @@
-#include "FlyCamera.h"
+#include "camera\FlyCamera.h"
 
 
 FlyCamera::FlyCamera(GLFWwindow* window)
