@@ -32,8 +32,14 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 
 	SetClearColor(clearColor);
 	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	return true;
+}
+
+bool GLFramework::Update()
+{
+	return glfwWindowShouldClose(sWindow->handle);	
 }
 
 Color GLFramework::GetClearColor()

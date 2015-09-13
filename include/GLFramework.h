@@ -30,6 +30,7 @@ struct Window
 	char* title = "";
 	GLFWwindow* handle = nullptr;
 	Color clearColor;
+	bool isClosing = false;
 };
 
 
@@ -37,6 +38,7 @@ class GLFramework
 {
 public:
 	static bool Startup(int height, int width, char* title, Color clearColor);
+	static bool Update();
 	static Color GetClearColor();
 	static void SetClearColor(Color color);
 	static void Cleanup();
