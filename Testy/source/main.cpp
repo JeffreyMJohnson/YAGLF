@@ -17,7 +17,7 @@ void main()
 	glf::Startup(1280, 720, "foo", Color(1, 1, 1, 1));
 	while (glf::Update())
 	{
-		
+		camera->Update(.1f);
 	}
 	//system("pause");
 	glf::Cleanup();

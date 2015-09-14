@@ -36,6 +36,9 @@
     <ClInclude Include="include\camera\FlyCamera.h">
       <Filter>Header Files\camera</Filter>
     </ClInclude>
+    <ClInclude Include="include\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GLFramework.cpp">
@@ -55,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="source\input\Mouse.cpp">
       <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Shader.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
