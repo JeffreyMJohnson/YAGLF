@@ -8,6 +8,7 @@
 class FlyCamera : public Camera
 {
 public:
+	FlyCamera();
 	FlyCamera(GLFWwindow* window);
 	void SetPerspective(const float fov, const float aspectRatio, const float near, const float far);
 	void SetSpeed(const float speed);

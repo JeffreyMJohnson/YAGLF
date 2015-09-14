@@ -1,5 +1,11 @@
 #include "camera\FlyCamera.h"
 
+FlyCamera::FlyCamera()
+{
+	Mouse::Init();
+	Mouse::SetMode(Mouse::Cursor_Mode::DISABLED);
+	Keyboard::Init();
+}
 
 FlyCamera::FlyCamera(GLFWwindow* window)
 {
@@ -28,6 +34,9 @@ void FlyCamera::SetSpeed(const float speed)
 
 void FlyCamera::Rotate(float angle, glm::vec3 axis)
 {
+	//TODO:need to refactor using rotating up vector I think.
+
+
 	mWorldTransform = glm::rotate(mWorldTransform, angle, axis);
 	mViewTransform = glm::inverse(mWorldTransform);
 	UpdateProjectViewTransform();
@@ -35,9 +44,11 @@ void FlyCamera::Rotate(float angle, glm::vec3 axis)
 
 void FlyCamera::Translate(glm::vec3 distance)
 {
-	mWorldTransform = glm::translate(mWorldTransform, distance);
-	mViewTransform = glm::inverse(mWorldTransform);
-	UpdateProjectViewTransform();
+	//mPosition = mPosition + distance;
+	SetPosition(mPosition + distance);
+	//mWorldTransform = glm::translate(mWorldTransform, distance);
+	//mViewTransform = glm::inverse(mWorldTransform);
+	//UpdateProjectViewTransform();
 }
 
 void FlyCamera::Update(float deltaTime)

@@ -40,7 +40,7 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 
 bool GLFramework::Update()
 {
-	if (glfwWindowShouldClose(sWindow->handle))
+	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		return false;
 
 
