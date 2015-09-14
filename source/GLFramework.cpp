@@ -1,6 +1,7 @@
 #include "GLFramework.h"
 
 Window* GLFramework::sWindow = new Window();
+int GLFramework::counter = 0;
 //Camera* GLFramework::sCamera = new FlyCamera();
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
@@ -39,7 +40,14 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 
 bool GLFramework::Update()
 {
-	return glfwWindowShouldClose(sWindow->handle);	
+	if (glfwWindowShouldClose(sWindow->handle))
+		return false;
+
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glfwSwapBuffers(sWindow->handle);
+	glfwPollEvents();
+	return true;
 }
 
 Color GLFramework::GetClearColor()

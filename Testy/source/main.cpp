@@ -11,8 +11,8 @@ void main()
 	glf::Startup(100, 100, "foo", Color(1, 1, 1, 1));
 	while (glf::Update())
 	{
-		cout << "tick\n";
+		
 	}
-	
+	//system("pause");
 	glf::Cleanup();
 }

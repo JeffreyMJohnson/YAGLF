@@ -30,7 +30,6 @@ struct Window
 	char* title = "";
 	GLFWwindow* handle = nullptr;
 	Color clearColor;
-	bool isClosing = false;
 };
 
 
@@ -42,6 +41,8 @@ public:
 	static Color GetClearColor();
 	static void SetClearColor(Color color);
 	static void Cleanup();
+
+	static int counter;
 
 private:
 	static Window* sWindow;
