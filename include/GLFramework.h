@@ -2,7 +2,7 @@
 #include "gl_core_4_4\gl_core_4_4.h"
 #include "GLFW\glfw3.h"
 #include "glm\vec4.hpp"
-#include "camera\FlyCamera.h"
+#include "camera\Camera.h"
 #include "Shader.h"
 
 #include <iostream>
@@ -39,6 +39,9 @@ class GLFramework
 public:
 	static bool Startup(int height, int width, char* title, Color clearColor);
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
+	static bool SetCamera(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
+	static void SlideCamera(const float hDistance, const float vDistance);
+	static void MoveCamera(const float distance);
 	static bool Update();
 	static Color GetClearColor();
 	static void SetClearColor(Color color);
