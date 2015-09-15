@@ -3,6 +3,7 @@
 #include "GLFW\glfw3.h"
 #include "glm\vec4.hpp"
 #include "camera\FlyCamera.h"
+#include "Shader.h"
 
 #include <iostream>
 
@@ -37,6 +38,7 @@ class GLFramework
 {
 public:
 	static bool Startup(int height, int width, char* title, Color clearColor);
+	static bool SetShader(const char* vertexPath, const char* fragmentPath);
 	static bool Update();
 	static Color GetClearColor();
 	static void SetClearColor(Color color);
@@ -47,4 +49,5 @@ public:
 private:
 	static Window* sWindow;
 	static Camera* sCamera;
+	static Shader* sShader;
 };
