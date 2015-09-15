@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFramework", "GLFramework.vcxproj", "{D54DCF38-2FD0-466E-AA3E-C62AE22807F8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Testy", "Testy\Testy.vcxproj", "{53839BAB-18C5-45D0-A541-DA6F81329B73}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D54DCF38-2FD0-466E-AA3E-C62AE22807F8} = {D54DCF38-2FD0-466E-AA3E-C62AE22807F8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
