@@ -2,7 +2,8 @@
 
 Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
-//Camera* GLFramework::sCamera = new FlyCamera();
+Camera* GLFramework::sCamera = new FlyCamera();
+Shader* GLFramework::sShader = new Shader();
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 {
@@ -38,6 +39,11 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 	return true;
 }
 
+bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
+{
+	return sShader->LoadShader(vertexPath, fragmentPath);
+}
+
 bool GLFramework::Update()
 {
 	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -71,5 +77,16 @@ void GLFramework::SetClearColor(Color color)
 
 void GLFramework::Cleanup()
 {
-	delete sWindow;
+	if (nullptr != sWindow)
+	{
+		delete sWindow;
+	}
+	if (nullptr != sCamera)
+	{
+		delete sCamera;
+	}
+	if (nullptr != sShader)
+	{
+		delete sShader;
+	}
 }

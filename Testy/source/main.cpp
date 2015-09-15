@@ -15,9 +15,10 @@ void main()
 	camera->SetPerspective(glm::pi<float>() * .25f, (float)1280 / 720, .1f, 1000.0f);
 
 	glf::Startup(1280, 720, "foo", Color(1, 1, 1, 1));
+	glf::SetShader("../Testy/source/Simple_Vertex_shader.glsl", "../Testy/source/Simple_Fragment_Shader.glsl");
 	while (glf::Update())
 	{
-		
+		camera->Update(.1f);
 	}
 	//system("pause");
 	glf::Cleanup();
