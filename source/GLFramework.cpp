@@ -1,8 +1,9 @@
 #include "GLFramework.h"
+#include "..\include\GLFramework.h"
 
 Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
-Camera* GLFramework::sCamera = new FlyCamera();
+Camera* GLFramework::sCamera = new Camera();
 Shader* GLFramework::sShader = new Shader();
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
@@ -42,6 +43,21 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
 {
 	return sShader->LoadShader(vertexPath, fragmentPath);
+}
+
+bool GLFramework::SetCamera(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+{
+	return sCamera->StartupPerspective(position, target, up);
+}
+
+void GLFramework::SlideCamera(const float hDistance, const float vDistance)
+{
+	sCamera->Slide(hDistance, vDistance);
+}
+
+void GLFramework::MoveCamera(const float distance)
+{
+	sCamera->Move(distance);
 }
 
 bool GLFramework::Update()

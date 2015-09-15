@@ -1,16 +1,20 @@
 #include "camera\Camera.h"
 
-bool Camera::SetView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+void Camera::Slide(const float hDistance, const float vDistance)
 {
-	mPosition = position;
-	mTarget = target;
-	mUpVector = up;
+	mPosition += glm::vec3(hDistance, vDistance, 0);
+	UpdateView();
+}
 
-	mViewTransform = glm::lookAt(mPosition, mTarget, mUpVector);
+void Camera::Move(const float distance)
+{
+	mPosition += glm::vec3(0, 0, distance);
+	UpdateView();
+}
 
-	mWorldTransform = glm::inverse(mViewTransform);
-
-	return true;
+bool Camera::StartupPerspective(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+{
+	return SetView(position, target, up);
 }
 
 void Camera::Update(const float deltaTime)
@@ -18,27 +22,9 @@ void Camera::Update(const float deltaTime)
 
 }
 
-
-
-void Camera::SetLookAt(const glm::vec3 from, const glm::vec3 to, const glm::vec3 up)
-{
-	mViewTransform = glm::lookAt(from, to, up);
-	mWorldTransform = glm::inverse(mViewTransform);
-}
-
-void Camera::SetPosition(const glm::vec3 position)
-{
-	SetView(position, mTarget, mUpVector);
-
-	//mWorldTransform = glm::translate(mWorldTransform, position);
-	//mViewTransform = glm::inverse(mWorldTransform);
-	UpdateProjectViewTransform();
-}
-
 const glm::mat4 Camera::GetWorldTransform()
 {
 	return glm::inverse(mViewTransform);
-	//return mWorldTransform;
 }
 
 const glm::mat4 Camera::GetView()
@@ -59,4 +45,24 @@ const glm::mat4 Camera::GetViewProjection()
 void Camera::UpdateProjectViewTransform()
 {
 	mProjectionViewTransform = mProjectionTransform * mViewTransform;
+}
+
+void Camera::UpdateView()
+{
+	mViewTransform = glm::lookAt(mPosition, mTarget, mUpVector);
+	mWorldTransform = glm::inverse(mViewTransform);
+	mProjectionViewTransform = mProjectionTransform * mViewTransform;
+}
+
+bool Camera::SetView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+{
+	mPosition = position;
+	mTarget = target;
+	mUpVector = up;
+
+	mViewTransform = glm::lookAt(mPosition, mTarget, mUpVector);
+
+	mWorldTransform = glm::inverse(mViewTransform);
+
+	return true;
 }

@@ -142,13 +142,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\camera\Camera.h" />
-    <ClInclude Include="include\camera\FlyCamera.h" />
     <ClInclude Include="include\GLFramework.h" />
     <ClInclude Include="include\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\camera\Camera.cpp" />
-    <ClCompile Include="source\camera\FlyCamera.cpp" />
     <ClCompile Include="source\GLFramework.cpp" />
     <ClCompile Include="source\gl_core\gl_core_4_4.c" />
     <ClCompile Include="source\input\Keyboard.cpp" />

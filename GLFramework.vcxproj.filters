@@ -33,9 +33,6 @@
     <ClInclude Include="include\camera\Camera.h">
       <Filter>Header Files\camera</Filter>
     </ClInclude>
-    <ClInclude Include="include\camera\FlyCamera.h">
-      <Filter>Header Files\camera</Filter>
-    </ClInclude>
     <ClInclude Include="include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,9 +42,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\camera\Camera.cpp">
-      <Filter>Source Files\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="source\camera\FlyCamera.cpp">
       <Filter>Source Files\camera</Filter>
     </ClCompile>
     <ClCompile Include="source\gl_core\gl_core_4_4.c">

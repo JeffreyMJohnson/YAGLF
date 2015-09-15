@@ -45,7 +45,7 @@ void FlyCamera::Rotate(float angle, glm::vec3 axis)
 void FlyCamera::Translate(glm::vec3 distance)
 {
 	//mPosition = mPosition + distance;
-	SetPosition(mPosition + distance);
+	//SetPosition(mPosition + distance);
 	//mWorldTransform = glm::translate(mWorldTransform, distance);
 	//mViewTransform = glm::inverse(mWorldTransform);
 	//UpdateProjectViewTransform();
