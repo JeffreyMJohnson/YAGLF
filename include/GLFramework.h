@@ -4,11 +4,14 @@
 #include "glm\vec4.hpp"
 #include "camera\Camera.h"
 #include "Shader.h"
+#include "RenderObject.h"
 
 #include <iostream>
-
+#include <map>
+#include <vector>
 
 using glm::vec4;
+using glm::vec3;
 
 struct Color
 {
@@ -37,6 +40,12 @@ struct Window
 class GLFramework
 {
 public:
+	struct Vertex
+	{
+		vec4 position;
+		vec4 color;
+	};
+
 	static bool Startup(int height, int width, char* title, Color clearColor);
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
 	static bool SetCamera(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
@@ -53,4 +62,7 @@ private:
 	static Window* sWindow;
 	static Camera* sCamera;
 	static Shader* sShader;
+	static std::map<uint, RenderObject*> sRenderObjects;
+
+	static uint LoadObject();
 };

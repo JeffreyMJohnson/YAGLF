@@ -5,6 +5,7 @@ Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
 Camera* GLFramework::sCamera = new Camera();
 Shader* GLFramework::sShader = new Shader();
+std::map<uint, RenderObject*> GLFramework::sRenderObjects;
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 {
@@ -105,4 +106,48 @@ void GLFramework::Cleanup()
 	{
 		delete sShader;
 	}
+
+	for (int i = 0; i < sRenderObjects.size(); i++)
+	{
+		delete sRenderObjects[i];
+	}
+	sRenderObjects.clear();
+}
+
+uint GLFramework::LoadObject()
+{
+	int rows = 1, cols = 1;
+	
+	Vertex* vertices = new Vertex[rows * cols];
+	for (uint r = 0; r < rows; r++)
+	{
+		for (uint c = 0; c < cols; c++)
+		{
+			vertices[r * cols + c].position = vec4((float)c, 0, (float)r, 1);
+
+			vec3 color = vec3(sinf((c / (float)(cols - 1))*(r / (float)(rows - 1))));
+
+			vertices[r*cols + c].color = vec4(color, 1);
+		}
+	}
+	/*
+	uint* indeces = new uint[(rows - 1) * (cols - 1) * 6];
+	uint index = 0;
+	for (uint r = 0; r < (rows - 1); r++)
+	{
+		for (uint c = 0; c < (cols - 1); c++)
+		{
+			//triangle 1
+			indeces[index++] = r*cols + c;
+			indeces[index++] = (r + 1)*cols + c;
+			indeces[index++] = (r + 1)*cols + (c + 1);
+
+			//triangle 2
+			indeces[index++] = r*cols + c;
+			indeces[index++] = (r + 1)*cols + (c + 1);
+			indeces[index++] = r*cols + (c + 1);
+		}
+	}*/
+
+
 }

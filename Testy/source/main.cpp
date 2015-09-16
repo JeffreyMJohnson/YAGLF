@@ -42,6 +42,7 @@ void main()
 		std::cout << "Loading camera succeded.\n";
 	}
 
+
 	while (glf::Update())
 	{
 		
