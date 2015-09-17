@@ -5,7 +5,8 @@ Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
 Camera* GLFramework::sCamera = new Camera();
 Shader* GLFramework::sShader = new Shader();
-std::map<uint, RenderObject*> GLFramework::sRenderObjects;
+//std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
+RenderObject* GLFramework::grid = nullptr;
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 {
@@ -38,6 +39,8 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	LoadObject();
+
 	return true;
 }
 
@@ -46,9 +49,14 @@ bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
 	return sShader->LoadShader(vertexPath, fragmentPath);
 }
 
-bool GLFramework::SetCamera(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+bool GLFramework::SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
 {
-	return sCamera->StartupPerspective(position, target, up);
+	return sCamera->SetView(position, target, up);
+}
+
+bool GLFramework::SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far)
+{
+	return sCamera->StartupPerspective(fov, aspectRatio, a_near, a_far);
 }
 
 void GLFramework::SlideCamera(const float hDistance, const float vDistance)
@@ -68,6 +76,31 @@ bool GLFramework::Update()
 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//sShader->SetUniform("ProjectionView", Shader::MAT4, &sCamera->GetViewProjection());
+	uint projectionViewUniform = glGetUniformLocation(sShader->GetProgram(), "ProjectionView");
+	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(sCamera->GetProjection() * sCamera->GetView()));
+	glBindVertexArray(grid->vao);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, grid->ibo);
+	//glBindBuffer(GL_ARRAY_BUFFER, grid->vbo);
+	glDrawElements(GL_TRIANGLES, grid->size, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//for each (RenderObject* object in sRenderObjects)
+	//{
+	//	//glBindVertexArray(object->vao);
+	//	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
+	//	//glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
+	//	glDrawElements(GL_TRIANGLES, object->size, GL_UNSIGNED_INT, 0);
+	//	//glBindVertexArray(0);
+	//	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//}
+
+
+
 	glfwSwapBuffers(sWindow->handle);
 	glfwPollEvents();
 	return true;
@@ -106,19 +139,25 @@ void GLFramework::Cleanup()
 	{
 		delete sShader;
 	}
-
-	for (int i = 0; i < sRenderObjects.size(); i++)
+	if (nullptr != grid)
 	{
-		delete sRenderObjects[i];
+		delete grid;
 	}
-	sRenderObjects.clear();
+
+	//for (int i = 0; i < sRenderObjects.size(); i++)
+	//{
+	//	delete sRenderObjects[i];
+	//}
+	//sRenderObjects.clear();
+
+
 }
 
 uint GLFramework::LoadObject()
 {
-	int rows = 1, cols = 1;
-	
-	Vertex* vertices = new Vertex[rows * cols];
+	int rows = 25, cols = 25;
+	uint verticesSize = rows * cols;
+	Vertex* vertices = new Vertex[verticesSize];
 	for (uint r = 0; r < rows; r++)
 	{
 		for (uint c = 0; c < cols; c++)
@@ -130,8 +169,12 @@ uint GLFramework::LoadObject()
 			vertices[r*cols + c].color = vec4(color, 1);
 		}
 	}
-	/*
-	uint* indeces = new uint[(rows - 1) * (cols - 1) * 6];
+
+
+
+	uint indecesCount = (rows - 1) * (cols - 1) * 6;
+	uint* indeces = new uint[indecesCount];
+
 	uint index = 0;
 	for (uint r = 0; r < (rows - 1); r++)
 	{
@@ -147,7 +190,25 @@ uint GLFramework::LoadObject()
 			indeces[index++] = (r + 1)*cols + (c + 1);
 			indeces[index++] = r*cols + (c + 1);
 		}
-	}*/
+	}
 
 
+	Geometry* geometry = new Geometry();
+	geometry->indeces = indeces;
+	geometry->indecesSize = indecesCount;
+	geometry->vertices = vertices;
+	geometry->verticesSize = verticesSize;
+	grid = new RenderObject();
+	grid->LoadBuffers(*geometry);
+
+
+	//sRenderObjects.push_back(grid);
+
+
+
+	delete[] vertices;
+	delete[] indeces;
+	delete geometry;
+
+	return 0;
 }

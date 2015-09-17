@@ -12,7 +12,7 @@ void main()
 	//camera->SetView(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 	//camera->SetPerspective(glm::pi<float>() * .25f, (float)1280 / 720, .1f, 1000.0f);
 
-	bool start = glf::Startup(1280, 720, "foo", Color(1, 1, 1, 1));
+	bool start = glf::Startup(1280, 720, "foo", Color(.5f, .5f, .5f, 1));
 	if (!start)
 	{
 		std::cout << "Failed startup.\n";
@@ -32,7 +32,8 @@ void main()
 		std::cout << "Loading shaders succeded.\n";
 	}
 
-	bool camera = glf::SetCamera(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
+	bool camera = glf::SetCameraProjection(glm::pi<float>() * .25f, (float)1280 / 720, .1f, 1000.0f);
+	camera = glf::SetCameraView(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 	if (!camera)
 	{
 		std::cout << "Failed loading camera.\n";

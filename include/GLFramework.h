@@ -1,6 +1,8 @@
 #pragma once
 #include "gl_core_4_4\gl_core_4_4.h"
 #include "GLFW\glfw3.h"
+#include <glm\glm.hpp>
+#include <glm\ext.hpp>
 #include "glm\vec4.hpp"
 #include "camera\Camera.h"
 #include "Shader.h"
@@ -36,19 +38,15 @@ struct Window
 	Color clearColor;
 };
 
-
 class GLFramework
 {
 public:
-	struct Vertex
-	{
-		vec4 position;
-		vec4 color;
-	};
+
 
 	static bool Startup(int height, int width, char* title, Color clearColor);
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
-	static bool SetCamera(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
+	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
+	static bool SetCameraProjection(const float fov, const float aspectRatio, const float near, const float far);
 	static void SlideCamera(const float hDistance, const float vDistance);
 	static void MoveCamera(const float distance);
 	static bool Update();
@@ -62,7 +60,7 @@ private:
 	static Window* sWindow;
 	static Camera* sCamera;
 	static Shader* sShader;
-	static std::map<uint, RenderObject*> sRenderObjects;
+	static RenderObject* grid;
 
 	static uint LoadObject();
 };

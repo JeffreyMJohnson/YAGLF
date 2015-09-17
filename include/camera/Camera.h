@@ -10,12 +10,12 @@ public:
 	void Slide(const float hDistance, const float vDistance);
 	void Move(const float distance);
 
-	bool StartupPerspective(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
+	bool StartupPerspective(const float fov, const float aspectRatio, const float a_near, const float a_far);
 	bool StartupOrthographic(const float left, const float right, const float bottom, const float top);
 	
 	void Update(const float deltaTime);
 
-
+	bool SetView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
 
 	const glm::mat4 GetWorldTransform();
 
@@ -37,5 +37,5 @@ protected:
 	void UpdateProjectViewTransform();
 	void UpdateView();
 	bool SetView(const float left, const float right, const float bottom, const float top);
-	bool SetView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
+	
 };

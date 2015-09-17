@@ -12,9 +12,11 @@ void Camera::Move(const float distance)
 	UpdateView();
 }
 
-bool Camera::StartupPerspective(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+bool Camera::StartupPerspective(const float fov, const float aspectRatio, const float near, const float far)
 {
-	return SetView(position, target, up);
+	mProjectionTransform = glm::perspective(fov, aspectRatio, near, far);
+	UpdateProjectViewTransform();
+	return true;
 }
 
 void Camera::Update(const float deltaTime)
@@ -51,7 +53,7 @@ void Camera::UpdateView()
 {
 	mViewTransform = glm::lookAt(mPosition, mTarget, mUpVector);
 	mWorldTransform = glm::inverse(mViewTransform);
-	mProjectionViewTransform = mProjectionTransform * mViewTransform;
+	UpdateProjectViewTransform();
 }
 
 bool Camera::SetView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
@@ -60,9 +62,7 @@ bool Camera::SetView(const glm::vec3 position, const glm::vec3 target, const glm
 	mTarget = target;
 	mUpVector = up;
 
-	mViewTransform = glm::lookAt(mPosition, mTarget, mUpVector);
-
-	mWorldTransform = glm::inverse(mViewTransform);
+	UpdateView();
 
 	return true;
 }
