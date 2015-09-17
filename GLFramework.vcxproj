@@ -143,8 +143,10 @@
   <ItemGroup>
     <ClInclude Include="include\camera\Camera.h" />
     <ClInclude Include="include\GLFramework.h" />
+    <ClInclude Include="include\Plane.h" />
     <ClInclude Include="include\RenderObject.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\Thingy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\camera\Camera.cpp" />
@@ -154,6 +156,7 @@
     <ClCompile Include="source\input\Mouse.cpp" />
     <ClCompile Include="source\RenderObject.cpp" />
     <ClCompile Include="source\Shader.cpp" />
+    <ClCompile Include="source\Thingy.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
