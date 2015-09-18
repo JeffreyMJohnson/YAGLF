@@ -6,7 +6,8 @@ int GLFramework::counter = 0;
 Camera* GLFramework::sCamera = new Camera();
 Shader* GLFramework::sShader = new Shader();
 //std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
-RenderObject* GLFramework::grid = nullptr;
+RenderObject* GLFramework::sRenderObject = nullptr;
+bool GLFramework::useWireframe = false;
 
 bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 {
@@ -36,10 +37,9 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 	}
 
 	SetClearColor(clearColor);
-	glEnable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	LoadObject();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 
 	return true;
 }
@@ -47,6 +47,16 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
 {
 	return sShader->LoadShader(vertexPath, fragmentPath);
+}
+
+void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType type, const void * value)
+{
+	sShader->SetUniform(name, type, value);
+}
+
+void GLFramework::SetWireframe(bool value)
+{
+	useWireframe = value;
 }
 
 bool GLFramework::SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
@@ -69,6 +79,17 @@ void GLFramework::MoveCamera(const float distance)
 	sCamera->Move(distance);
 }
 
+bool GLFramework::LoadModel(const char * path)
+{
+	return true;
+}
+
+bool GLFramework::LoadModel(Geometry & geometry)
+{
+	LoadBuffers(geometry);
+	return true;
+}
+
 bool GLFramework::Update()
 {
 	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -76,29 +97,14 @@ bool GLFramework::Update()
 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//sShader->SetUniform("ProjectionView", Shader::MAT4, &sCamera->GetViewProjection());
-	uint projectionViewUniform = glGetUniformLocation(sShader->GetProgram(), "ProjectionView");
-	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(sCamera->GetProjection() * sCamera->GetView()));
-	glBindVertexArray(grid->vao);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, grid->ibo);
-	//glBindBuffer(GL_ARRAY_BUFFER, grid->vbo);
-	glDrawElements(GL_TRIANGLES, grid->size, GL_UNSIGNED_INT, 0);
+	if (useWireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	sShader->SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(sCamera->GetViewProjection()));
+	glBindVertexArray(sRenderObject->vao);
+	glDrawElements(GL_TRIANGLES, sRenderObject->indexCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//for each (RenderObject* object in sRenderObjects)
-	//{
-	//	//glBindVertexArray(object->vao);
-	//	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
-	//	//glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
-	//	glDrawElements(GL_TRIANGLES, object->size, GL_UNSIGNED_INT, 0);
-	//	//glBindVertexArray(0);
-	//	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//}
-
 
 
 	glfwSwapBuffers(sWindow->handle);
@@ -139,76 +145,49 @@ void GLFramework::Cleanup()
 	{
 		delete sShader;
 	}
-	if (nullptr != grid)
+	if (nullptr != sRenderObject)
 	{
-		delete grid;
+		sRenderObject->DeleteBuffers();
+		delete sRenderObject;
 	}
-
-	//for (int i = 0; i < sRenderObjects.size(); i++)
-	//{
-	//	delete sRenderObjects[i];
-	//}
-	//sRenderObjects.clear();
 
 
 }
 
-uint GLFramework::LoadObject()
+bool GLFramework::LoadBuffers(const Geometry & geometry)
 {
-	int rows = 25, cols = 25;
-	uint verticesSize = rows * cols;
-	Vertex* vertices = new Vertex[verticesSize];
-	for (uint r = 0; r < rows; r++)
+	if (nullptr == sRenderObject)
 	{
-		for (uint c = 0; c < cols; c++)
-		{
-			vertices[r * cols + c].position = vec4((float)c, 0, (float)r, 1);
-
-			vec3 color = vec3(sinf((c / (float)(cols - 1))*(r / (float)(rows - 1))));
-
-			vertices[r*cols + c].color = vec4(color, 1);
-		}
+		sRenderObject = new RenderObject();
 	}
+	glGenVertexArrays(1, &sRenderObject->vao);
+	glGenBuffers(1, &sRenderObject->vbo);
+	glGenBuffers(1, &sRenderObject->ibo);
+
+	glBindVertexArray(sRenderObject->vao);
 
 
+	sRenderObject->indexCount = geometry.indices.size();
 
-	uint indecesCount = (rows - 1) * (cols - 1) * 6;
-	uint* indeces = new uint[indecesCount];
+	glBindBuffer(GL_ARRAY_BUFFER, sRenderObject->vbo);
+	glBufferData(GL_ARRAY_BUFFER, geometry.vertices.size() * sizeof(Vertex), geometry.vertices.data(), GL_STATIC_DRAW);
 
-	uint index = 0;
-	for (uint r = 0; r < (rows - 1); r++)
-	{
-		for (uint c = 0; c < (cols - 1); c++)
-		{
-			//triangle 1
-			indeces[index++] = r*cols + c;
-			indeces[index++] = (r + 1)*cols + c;
-			indeces[index++] = (r + 1)*cols + (c + 1);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sRenderObject->ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry.indices.size() * sizeof(uint), geometry.indices.data(), GL_STATIC_DRAW);
 
-			//triangle 2
-			indeces[index++] = r*cols + c;
-			indeces[index++] = (r + 1)*cols + (c + 1);
-			indeces[index++] = r*cols + (c + 1);
-		}
-	}
+	glEnableVertexAttribArray(0);//position
+	glEnableVertexAttribArray(1);//color in shader right now.
+								 //glEnableVertexAttribArray(2);//normal
+								 //glEnableVertexAttribArray(3);//UV coord
 
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	//THIS NEEDS TO BE CHANGED WHEN SHADER IS UPDATED
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));// 1));
+	//glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));
+	//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
 
-	Geometry* geometry = new Geometry();
-	geometry->indeces = indeces;
-	geometry->indecesSize = indecesCount;
-	geometry->vertices = vertices;
-	geometry->verticesSize = verticesSize;
-	grid = new RenderObject();
-	grid->LoadBuffers(*geometry);
-
-
-	//sRenderObjects.push_back(grid);
-
-
-
-	delete[] vertices;
-	delete[] indeces;
-	delete geometry;
-
-	return 0;
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	return true;
 }

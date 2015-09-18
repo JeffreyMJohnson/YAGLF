@@ -15,54 +15,20 @@ struct Vertex
 {
 	glm::vec4 position;
 	glm::vec4 color;
-	//glm::vec4 normal;
-	//glm::vec2 uv;
+	glm::vec4 normal;
+	glm::vec2 UV;
 };
 
 struct Geometry
 {
-	Vertex* vertices;
-	uint verticesSize;
-	uint* indeces;
-	uint indecesSize;
+	std::vector<Vertex> vertices;
+	std::vector<uint> indices;
 };
 
 struct RenderObject
 {
-	uint vao = 0, vbo = 0, ibo = 0, size = 0;
+	uint vao = 0, vbo = 0, ibo = 0, indexCount = 0;
 
 	void LoadBuffers(Geometry& geometry);
+	void DeleteBuffers();
 };
-
-
-//class RenderObject
-//{
-//public:
-//	enum Buffer_Type
-//	{
-//		VERTEX = GL_ELEMENT_ARRAY_BUFFER,
-//		INDEX = GL_ARRAY_BUFFER
-//	};
-//
-//	enum Buffer_Usage
-//	{
-//		DYNAMIC_COPY = GL_DYNAMIC_COPY,
-//		DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
-//		DYNAMIC_READ = GL_DYNAMIC_READ,
-//		STATIC_COPY = GL_STATIC_COPY,
-//		STATIC_DRAW = GL_STATIC_DRAW,
-//		STATIC_READ = GL_STATIC_READ
-//	};
-//
-//	//RenderObject();
-//
-//	bool LoadBuffer(Buffer_Type type, Buffer_Usage usage, const void* data, const uint dataSize, uint indexCount);
-//	void Draw();
-//	const uint GetVBO() { return mVBO; }
-//	const uint GetVAO() { return mVAO; }
-//	const uint GetIBO() { return mIBO; }
-//	const uint GetIndexCount() { return mIndexCount; }
-//private:
-//	uint mVAO, mVBO, mIBO, mIndexCount;
-//
-//};

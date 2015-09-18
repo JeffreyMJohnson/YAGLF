@@ -25,6 +25,7 @@ const bool Shader::LoadShader(const char * vertexPath, const char * fragmentPath
 		delete[] log;
 		return false;
 	}
+	glUseProgram(mProgram);
 	return true;
 }
 

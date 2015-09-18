@@ -5,12 +5,51 @@ typedef GLFramework glf;
 typedef glm::vec3 vec3;
 
 
+Geometry BuildGrid()
+{
+	int rows = 25, cols = 25;
+	uint verticesSize = rows * cols;
+	Geometry grid;
+	grid.vertices.resize(verticesSize);
+	for (uint r = 0; r < rows; r++)
+	{
+		for (uint c = 0; c < cols; c++)
+		{
+			grid.vertices[r * cols + c].position = vec4((float)c, 0, (float)r, 1);
+
+			vec3 color = vec3(sinf((c / (float)(cols - 1))*(r / (float)(rows - 1))));
+
+			grid.vertices[r*cols + c].color = vec4(color, 1);
+		}
+	}
+
+
+
+	uint indecesCount = (rows - 1) * (cols - 1) * 6;
+	grid.indices.resize(indecesCount);
+
+	uint index = 0;
+	for (uint r = 0; r < (rows - 1); r++)
+	{
+		for (uint c = 0; c < (cols - 1); c++)
+		{
+			//triangle 1
+			grid.indices[index++] = r*cols + c;
+			grid.indices[index++] = (r + 1)*cols + c;
+			grid.indices[index++] = (r + 1)*cols + (c + 1);
+
+			//triangle 2
+			grid.indices[index++] = r*cols + c;
+			grid.indices[index++] = (r + 1)*cols + (c + 1);
+			grid.indices[index++] = r*cols + (c + 1);
+		}
+	}
+	return grid;
+}
+
 void main()
 {
 	using namespace std;
-	//camera = new FlyCamera();
-	//camera->SetView(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
-	//camera->SetPerspective(glm::pi<float>() * .25f, (float)1280 / 720, .1f, 1000.0f);
 
 	bool start = glf::Startup(1280, 720, "foo", Color(.5f, .5f, .5f, 1));
 	if (!start)
@@ -44,9 +83,13 @@ void main()
 	}
 
 
+	glf::SetWireframe(true);
+	Geometry grid = BuildGrid();
+	glf::LoadModel(grid);
+
 	while (glf::Update())
 	{
-		
+
 	}
 	//system("pause");
 	glf::Cleanup();

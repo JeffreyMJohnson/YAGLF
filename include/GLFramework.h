@@ -12,8 +12,10 @@
 #include <map>
 #include <vector>
 
-using glm::vec4;
+using glm::vec2;
 using glm::vec3;
+using glm::vec4;
+
 
 struct Color
 {
@@ -45,10 +47,16 @@ public:
 
 	static bool Startup(int height, int width, char* title, Color clearColor);
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
+	static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
+	static void SetWireframe(bool value);
 	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
 	static bool SetCameraProjection(const float fov, const float aspectRatio, const float near, const float far);
 	static void SlideCamera(const float hDistance, const float vDistance);
 	static void MoveCamera(const float distance);
+
+	static bool LoadModel(const char* path);
+	static bool LoadModel(Geometry& geometry);
+
 	static bool Update();
 	static Color GetClearColor();
 	static void SetClearColor(Color color);
@@ -60,7 +68,9 @@ private:
 	static Window* sWindow;
 	static Camera* sCamera;
 	static Shader* sShader;
-	static RenderObject* grid;
+	static RenderObject* sRenderObject;
+	static bool useWireframe;
 
 	static uint LoadObject();
+	static bool LoadBuffers(const Geometry& geometry);
 };
