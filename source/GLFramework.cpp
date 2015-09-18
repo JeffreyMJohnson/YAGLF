@@ -81,6 +81,107 @@ void GLFramework::MoveCamera(const float distance)
 
 bool GLFramework::LoadModel(const char * path)
 {
+	bool success = true;
+	//find extension
+	std::string sPath(path);
+	std::string ext = sPath.substr(sPath.find_last_of('.'));
+
+	Geometry geometry;
+
+	if (ext == ".obj")
+	{
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+		std::string err = tinyobj::LoadObj(shapes, materials, path);
+		if (err.length() != 0)
+		{
+			std::cout << "Error loading OBJ file:\n" << err << std::endl;
+			success = false;
+		}
+
+		//hard coding only using first shape, can change to loop here
+		if (success)
+		{
+			auto shape = shapes[0];
+			auto mesh = shape.mesh;
+
+			geometry.vertices.resize(mesh.positions.size());
+
+			uint posIndex = 0;
+			uint normalIndex = 0;
+			uint UVIndex = 0;
+			bool hasNormals = mesh.normals.size() == mesh.positions.size();
+			bool hasUVs = mesh.texcoords.size() == mesh.positions.size();
+			//obj has vectors of floats, my struct and shaders uses glm vecs so need to build myself
+			for (uint vertexCount = 0; posIndex < mesh.positions.size(); vertexCount++)
+			{
+				float x = mesh.positions[posIndex++];
+				float y = mesh.positions[posIndex++];
+				float z = mesh.positions[posIndex++];
+				geometry.vertices[vertexCount].position = vec4(x, y, z, 1);
+
+				if (hasNormals)
+				{
+					x = mesh.normals[normalIndex++];
+					y = mesh.normals[normalIndex++];
+					z = mesh.normals[normalIndex++];
+					geometry.vertices[vertexCount].normal = vec4(x, y, z, 1);
+				}
+
+				if (hasUVs)
+				{
+					x = mesh.texcoords[UVIndex++];
+					y = mesh.texcoords[UVIndex++];
+					geometry.vertices[vertexCount].UV = vec2(x, y);
+				}
+			}
+
+			geometry.indices = mesh.indices;
+		}
+	}
+	else if (ext == ".fbx")
+	{
+
+
+		FBXFile file;
+		success = file.load(path, FBXFile::UNITS_METER, false, false, false);
+		if (!success)
+		{
+			std::cout << "Error loading FBX file:\n";
+		}
+		else
+		{
+			//hardcoding to use single mesh, can loop here if needed.
+			FBXMeshNode* mesh = file.getMeshByIndex(0);
+			geometry.vertices.resize(mesh->m_vertices.size());
+
+			for (int i = 0; i < mesh->m_vertices.size(); i++)
+			{
+				auto xVert = mesh->m_vertices[i];
+				geometry.vertices[i].position = xVert.position;
+				geometry.vertices[i].color = xVert.colour;
+				geometry.vertices[i].normal = xVert.normal;
+				geometry.vertices[i].UV = xVert.texCoord1;
+			}
+
+			geometry.indices = mesh->m_indices;
+
+			file.unload();
+		}
+
+	}
+	else
+	{
+		std::cout << "Unsupported format. Only support .obj or .fbx files.\n";
+		success = false;
+	}
+	if (!success)
+	{
+		return false;
+	}
+
+	LoadModel(geometry);
+
 	return true;
 }
 

@@ -7,6 +7,7 @@
 #include "camera\Camera.h"
 #include "Shader.h"
 #include "RenderObject.h"
+#include "tiny_obj_loader\tiny_obj_loader.h"
 #include "fbx_loader\FBXFile.h"
 
 #include <iostream>

@@ -84,8 +84,9 @@ void main()
 
 
 	glf::SetWireframe(true);
-	Geometry grid = BuildGrid();
-	glf::LoadModel(grid);
+	//Geometry grid = BuildGrid();
+	//glf::LoadModel(grid);
+	glf::LoadModel("../Testy/resources/models/Bunny.fbx");
 
 	while (glf::Update())
 	{

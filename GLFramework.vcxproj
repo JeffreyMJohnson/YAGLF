@@ -146,8 +146,10 @@
     <ClInclude Include="include\Plane.h" />
     <ClInclude Include="include\RenderObject.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\tiny_obj_loader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc" />
     <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\GLFramework.cpp" />
     <ClCompile Include="source\gl_core\gl_core_4_4.c" />
