@@ -17,7 +17,8 @@ public:
 	{
 		MAT4,
 		VEC4,
-		FLO1
+		FLO1, 
+		INT1
 	};
 
 	const bool LoadShader(const char* vertexPath, const char* fragmentPath);

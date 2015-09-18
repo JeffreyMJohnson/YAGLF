@@ -5,6 +5,8 @@ Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
 Camera* GLFramework::sCamera = new Camera();
 Shader* GLFramework::sShader = new Shader();
+std::vector<uint> GLFramework::sTextures;
+
 //std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
 RenderObject* GLFramework::sRenderObject = nullptr;
 bool GLFramework::useWireframe = false;
@@ -52,6 +54,26 @@ bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
 void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType type, const void * value)
 {
 	sShader->SetUniform(name, type, value);
+}
+
+uint GLFramework::LoadTexture(const char * path)
+{
+	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);	if (data == nullptr)	{		std::cout << "error loading texture.\n";	}	uint textureHandle;	glGenTextures(1, &textureHandle);
+	glBindTexture(GL_TEXTURE_2D, textureHandle);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight,	0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+	sTextures.push_back(textureHandle);
+	return sTextures.size() - 1;
+}
+
+void GLFramework::SetTexture(Texture_Unit unit, uint texture)
+{
+	glActiveTexture(unit);
+	glBindTexture(GL_TEXTURE_2D, sTextures[texture]);
 }
 
 void GLFramework::SetWireframe(bool value)
@@ -278,14 +300,13 @@ bool GLFramework::LoadBuffers(const Geometry & geometry)
 
 	glEnableVertexAttribArray(0);//position
 	glEnableVertexAttribArray(1);//color in shader right now.
-								 //glEnableVertexAttribArray(2);//normal
-								 //glEnableVertexAttribArray(3);//UV coord
+	glEnableVertexAttribArray(2);//normal
+	glEnableVertexAttribArray(3);//UV coord
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	//THIS NEEDS TO BE CHANGED WHEN SHADER IS UPDATED
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));// 1));
-	//glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));
-	//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 1));
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

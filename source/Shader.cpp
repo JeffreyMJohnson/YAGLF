@@ -48,6 +48,8 @@ void Shader::SetUniform(const char * name, const UniformType type, const void * 
 	case FLO1:
 		glUniform1f(location, *(GLfloat*)value);
 		break;
+	case INT1:
+		glUniform1i(location, (GLint)value);
 	}
 }
 

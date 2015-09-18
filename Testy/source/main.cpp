@@ -47,6 +47,36 @@ Geometry BuildGrid()
 	return grid;
 }
 
+Geometry BuildQuad()
+{
+	Geometry quad;
+	Vertex v1;
+	v1.position = vec4(-5, 0, 5, 1);
+	v1.UV = vec2(0, 1);
+	quad.vertices.push_back(v1);
+	Vertex v2;
+	v2.position = vec4(5, 0, 5, 1);
+	v2.UV = vec2(1, 1);
+	quad.vertices.push_back(v2);
+	Vertex v3;
+	v3.position = vec4(5, 0, -5, 1);
+	v3.UV = vec2(1, 0);
+	quad.vertices.push_back(v3);
+	Vertex v4;
+	v4.position = vec4(-5, 0, -5, 1);
+	v4.UV = vec2(0, 0);
+	quad.vertices.push_back(v4);
+
+	quad.indices.push_back(0);
+	quad.indices.push_back(1);
+	quad.indices.push_back(2);
+	quad.indices.push_back(0);
+	quad.indices.push_back(2);
+	quad.indices.push_back(3);
+
+	return quad;
+}
+
 void main()
 {
 	using namespace std;
@@ -61,7 +91,8 @@ void main()
 		std::cout << "Startup succeded.\n";
 	}
 
-	bool shader = glf::SetShader("../Testy/source/Simple_Vertex_shader.glsl", "../Testy/source/Simple_Fragment_Shader.glsl");
+	bool shader = glf::SetShader("../Testy/source/Texture_Vert_shader.glsl", "../Testy/source/Texture_Frag_Shader.glsl");
+	
 	if (!shader)
 	{
 		std::cout << "Failed loading shaders.\n";
@@ -70,6 +101,11 @@ void main()
 	{
 		std::cout << "Loading shaders succeded.\n";
 	}
+
+	uint texture = glf::LoadTexture("../Testy/resources/textures/crate.png");
+	
+			glf::SetTexture(Texture_Unit::ZERO, texture);
+		glf::SetShaderUniform("diffuse", Shader::INT1, 0);
 
 	bool camera = glf::SetCameraProjection(glm::pi<float>() * .25f, (float)1280 / 720, .1f, 1000.0f);
 	camera = glf::SetCameraView(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
@@ -83,11 +119,11 @@ void main()
 	}
 
 
-	glf::SetWireframe(true);
+	//glf::SetWireframe(true);
 	//Geometry grid = BuildGrid();
 	//glf::LoadModel(grid);
-	glf::LoadModel("../Testy/resources/models/Bunny.fbx");
-
+	//glf::LoadModel("../Testy/resources/models/Bunny.fbx");
+	glf::LoadModel(BuildQuad());
 	while (glf::Update())
 	{
 

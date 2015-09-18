@@ -9,6 +9,7 @@
 #include "RenderObject.h"
 #include "tiny_obj_loader\tiny_obj_loader.h"
 #include "fbx_loader\FBXFile.h"
+#include "stb\stb_image.h"
 
 #include <iostream>
 #include <map>
@@ -42,6 +43,21 @@ struct Window
 	Color clearColor;
 };
 
+enum Texture_Unit
+{
+	ZERO = GL_TEXTURE0,
+	ONE = GL_TEXTURE1,
+	TWO = GL_TEXTURE2,
+	THREE = GL_TEXTURE3,
+	FOUR = GL_TEXTURE4,
+	FIVE = GL_TEXTURE5,
+	SIX = GL_TEXTURE6,
+	SEVEN = GL_TEXTURE7,
+	EIGHT = GL_TEXTURE8,
+	NINE = GL_TEXTURE9,
+	TEN = GL_TEXTURE10
+};
+
 class GLFramework
 {
 public:
@@ -50,6 +66,9 @@ public:
 	static bool Startup(int height, int width, char* title, Color clearColor);
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
 	static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
+	static uint LoadTexture(const char * path);
+	static void SetTexture(Texture_Unit unit, uint texture);
+
 	static void SetWireframe(bool value);
 	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
 	static bool SetCameraProjection(const float fov, const float aspectRatio, const float near, const float far);
@@ -70,6 +89,7 @@ private:
 	static Window* sWindow;
 	static Camera* sCamera;
 	static Shader* sShader;
+	static std::vector<uint> sTextures;
 	static RenderObject* sRenderObject;
 	static bool useWireframe;
 
