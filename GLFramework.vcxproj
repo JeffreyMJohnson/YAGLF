@@ -89,7 +89,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;FBXLoader_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -120,7 +120,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;FBXLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -141,13 +141,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Camera.h" />
-    <ClInclude Include="include\FlyCamera.h" />
+    <ClInclude Include="include\camera\Camera.h" />
     <ClInclude Include="include\GLFramework.h" />
+    <ClInclude Include="include\Plane.h" />
+    <ClInclude Include="include\RenderObject.h" />
+    <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\tiny_obj_loader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc" />
+    <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\GLFramework.cpp" />
-    <ClCompile Include="source\gl_core_4_4.c" />
+    <ClCompile Include="source\gl_core\gl_core_4_4.c" />
+    <ClCompile Include="source\input\Keyboard.cpp" />
+    <ClCompile Include="source\input\Mouse.cpp" />
+    <ClCompile Include="source\RenderObject.cpp" />
+    <ClCompile Include="source\Shader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
