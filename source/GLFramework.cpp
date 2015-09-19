@@ -59,9 +59,9 @@ void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType 
 uint GLFramework::LoadTexture(const char * path)
 {
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
-	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);	if (data == nullptr)	{		std::cout << "error loading texture.\n";	}	uint textureHandle;	glGenTextures(1, &textureHandle);
+	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);	if (data == nullptr)	{		std::cout << "error loading texture.\n";	}	switch (imageFormat)	{	case 1: imageFormat = GL_RED; break;	case 2: imageFormat = GL_RG; break;	case 3: imageFormat = GL_RGB; break;	case 4: imageFormat = GL_RGBA; break;	}	uint textureHandle;	glGenTextures(1, &textureHandle);
 	glBindTexture(GL_TEXTURE_2D, textureHandle);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight,	0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight,	0, imageFormat, GL_UNSIGNED_BYTE, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -74,6 +74,7 @@ void GLFramework::SetTexture(Texture_Unit unit, uint texture)
 {
 	glActiveTexture(unit);
 	glBindTexture(GL_TEXTURE_2D, sTextures[texture]);
+	
 }
 
 void GLFramework::SetWireframe(bool value)

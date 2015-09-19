@@ -103,9 +103,15 @@ void main()
 	}
 
 	uint texture = glf::LoadTexture("../Testy/resources/textures/crate.png");
+	uint shadow = glf::LoadTexture("../Testy/resources/textures/star.png");
 	
-			glf::SetTexture(Texture_Unit::ZERO, texture);
-		glf::SetShaderUniform("diffuse", Shader::INT1, 0);
+		glf::SetTexture(Texture_Unit::ZERO, texture);
+		int texNum = 0;
+		glf::SetShaderUniform("diffuse", Shader::INT1, &texNum);
+		
+		int shadowNum = 1;
+		glf::SetTexture(Texture_Unit::ONE, shadow);
+		glf::SetShaderUniform("shadow", Shader::INT1, &shadowNum);
 
 	bool camera = glf::SetCameraProjection(glm::pi<float>() * .25f, (float)1280 / 720, .1f, 1000.0f);
 	camera = glf::SetCameraView(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
@@ -122,11 +128,13 @@ void main()
 	//glf::SetWireframe(true);
 	//Geometry grid = BuildGrid();
 	//glf::LoadModel(grid);
-	//glf::LoadModel("../Testy/resources/models/Bunny.fbx");
+	//glf::LoadModel("../Testy/resources/models/soulspear/soulspear.fbx");
 	glf::LoadModel(BuildQuad());
+	float count = 0;
+
 	while (glf::Update())
 	{
-
+		
 	}
 	//system("pause");
 	glf::Cleanup();
