@@ -58,10 +58,26 @@ void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType 
 
 uint GLFramework::LoadTexture(const char * path)
 {
+	/*
+	 An output image with N components has the following components interleaved
+ in this order in each pixel:
+
+     N=#comp     components
+       1           grey
+       2           grey, alpha
+       3           red, green, blue
+       4           red, green, blue, alpha
+
+ If image loading fails for any reason, the return value will be NULL,
+ and *x, *y, *comp will be unchanged. The function stbi_failure_reason()
+ can be queried for an extremely brief, end-user unfriendly explanation
+ of why the load failed.
+	*/
+
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
-	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);	if (data == nullptr)	{		std::cout << "error loading texture.\n";	}	uint textureHandle;	glGenTextures(1, &textureHandle);
+	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);	switch (imageFormat)	{	case 1: imageFormat = GL_RED; break;	case 2: imageFormat = GL_RG; break;	case 3: imageFormat = GL_RGB; break;	case 4: imageFormat = GL_RGBA; break;	}	if (data == nullptr)	{		std::cout << "error loading texture.\n" << stbi_failure_reason();	}	uint textureHandle;	glGenTextures(1, &textureHandle);
 	glBindTexture(GL_TEXTURE_2D, textureHandle);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight,	0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight,0, imageFormat, GL_UNSIGNED_BYTE, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
