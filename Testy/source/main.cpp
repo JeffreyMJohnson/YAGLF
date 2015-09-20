@@ -102,8 +102,8 @@ void main()
 		std::cout << "Loading shaders succeded.\n";
 	}
 
-	uint texture = glf::LoadTexture("../Testy/resources/textures/crate.png");
-	uint shadow = glf::LoadTexture("../Testy/resources/textures/star.png");
+	uint texture = glf::LoadTexture("../resources/textures/crate.png");
+	uint shadow = glf::LoadTexture("../resources/textures/star.png");
 	
 		glf::SetTexture(Texture_Unit::ZERO, texture);
 		int texNum = 0;
