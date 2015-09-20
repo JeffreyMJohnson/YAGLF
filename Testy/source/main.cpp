@@ -102,7 +102,7 @@ void main()
 		std::cout << "Loading shaders succeded.\n";
 	}
 
-	uint texture = glf::LoadTexture("../Testy/resources/textures/crate.png");
+	uint texture = glf::LoadTexture("../resources/textures/crate.png");
 	
 			glf::SetTexture(Texture_Unit::ZERO, texture);
 		glf::SetShaderUniform("diffuse", Shader::INT1, 0);

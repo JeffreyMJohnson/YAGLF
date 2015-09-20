@@ -11,7 +11,7 @@ std::vector<uint> GLFramework::sTextures;
 RenderObject* GLFramework::sRenderObject = nullptr;
 bool GLFramework::useWireframe = false;
 
-bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
+bool GLFramework::Startup(const int width, const int height, const char * title, const Color clearColor)
 {
 	if (!glfwInit())
 	{
@@ -21,7 +21,7 @@ bool GLFramework::Startup(int height, int width, char * title, Color clearColor)
 	sWindow->width = width;
 	sWindow->title = title;
 
-	sWindow->handle = glfwCreateWindow(height, width, title, nullptr, nullptr);
+	sWindow->handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
 	if (nullptr == sWindow->handle)
 	{
@@ -245,7 +245,7 @@ Color GLFramework::GetClearColor()
 	return result;
 }
 
-void GLFramework::SetClearColor(Color color)
+void GLFramework::SetClearColor(const Color color)
 {
 	if (nullptr != sWindow)
 	{

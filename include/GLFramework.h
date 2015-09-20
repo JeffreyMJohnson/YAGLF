@@ -38,7 +38,7 @@ struct Window
 {
 	int height = 0;
 	int width = 0;
-	char* title = "";
+	const char* title;
 	GLFWwindow* handle = nullptr;
 	Color clearColor;
 };
@@ -63,7 +63,7 @@ class GLFramework
 public:
 
 
-	static bool Startup(int height, int width, char* title, Color clearColor);
+	static bool Startup(const int width, const int height, const char* title, const Color clearColor);
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
 	static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
 	static uint LoadTexture(const char * path);
@@ -71,7 +71,7 @@ public:
 
 	static void SetWireframe(bool value);
 	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
-	static bool SetCameraProjection(const float fov, const float aspectRatio, const float near, const float far);
+	static bool SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far);
 	static void SlideCamera(const float hDistance, const float vDistance);
 	static void MoveCamera(const float distance);
 
@@ -80,7 +80,7 @@ public:
 
 	static bool Update();
 	static Color GetClearColor();
-	static void SetClearColor(Color color);
+	static void SetClearColor(const Color color);
 	static void Cleanup();
 
 	static int counter;
