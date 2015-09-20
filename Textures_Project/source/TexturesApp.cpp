@@ -6,13 +6,18 @@ bool TexturesApp::StartUp()
 {
 	glf::Startup(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, CLEAR_COLOR);
 	glf::SetShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-	textures.push_back(glf::LoadTexture("../resources/textures/soulspear/soulspear_diffuse.tga"));
-	glf::SetTexture(Texture_Unit::ZERO, textures[0]);
-	glf::SetShaderUniform("diffuse", Shader::INT1, &textures[0]);
+
+	textures.push_back(glf::LoadTexture("../resources/textures/star.png"));
+	textures.push_back(glf::LoadTexture("../resources/textures/crate.png"));
+
+	glf::SetTexture(Texture_Unit::ONE, textures[0]);
+	glf::SetShaderUniform("shadow", Shader::INT1, &textures[0]);
+	glf::SetTexture(Texture_Unit::ZERO, textures[1]);
+	glf::SetShaderUniform("diffuse", Shader::INT1, &textures[1]);
 	glf::SetCameraProjection(CAMERA_FOV, WINDOW_WIDTH / (float)WINDOW_HEIGHT, CAMERA_NEAR, CAMERA_FAR);
 	glf::SetCameraView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
-	//glf::LoadModel(BuildQuad());
-	glf::LoadModel("../resources/models/fbx/soulspear.fbx");
+	glf::LoadModel(BuildQuad());
+	//glf::LoadModel("../resources/models/fbx/soulspear.fbx");
 	return true;
 }
 
