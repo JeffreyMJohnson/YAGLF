@@ -6,6 +6,8 @@ FBXLoader_d.lib
 FBXLoader.lib
 glfw3.lib
 
+[Tt]humbs.db
+
 # User-specific files
 *.suo
 *.user
