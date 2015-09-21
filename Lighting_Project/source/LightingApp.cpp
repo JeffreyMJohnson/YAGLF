@@ -11,7 +11,13 @@ bool LightingApp::StartUp()
 	glf::LoadModel("../resources/models/fbx/bunny.fbx");
 
 	glm::vec3 lightDirection = glm::vec3(0,1, 0);
-	glf::SetShaderUniform("uLightDirection", Shader::VEC3, &lightDirection);
+	glm::vec3 lightColor = vec3(.99f, .72f, .07f);
+	float specularPower = 128;
+	
+	glf::SetShaderUniform("lightDirection", Shader::VEC3, &lightDirection);
+	glf::SetShaderUniform("lightColor", Shader::VEC3, &lightColor);
+	glf::SetShaderUniform("cameraPosition", Shader::VEC3, &glf::GetCameraPosition());
+	glf::SetShaderUniform("specularPower", Shader::FLO1, &specularPower);
 	return true;
 }
 

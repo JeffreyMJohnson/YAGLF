@@ -72,6 +72,7 @@ public:
 	static void SetWireframe(bool value);
 	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
 	static bool SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far);
+	static vec3 GetCameraPosition() { return sCamera->GetPosition(); }
 	static void SlideCamera(const float hDistance, const float vDistance);
 	static void MoveCamera(const float distance);
 

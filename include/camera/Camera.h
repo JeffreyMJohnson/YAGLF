@@ -23,6 +23,8 @@ public:
 	const glm::mat4 GetProjection();
 	const glm::mat4 GetViewProjection();
 
+	const glm::vec3 GetPosition() { return mPosition; }
+
 
 protected:
 	glm::vec3 mPosition, mTarget, mUpVector;
