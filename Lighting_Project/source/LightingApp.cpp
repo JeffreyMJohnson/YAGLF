@@ -10,6 +10,8 @@ bool LightingApp::StartUp()
 	glf::SetCameraView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
 	glf::LoadModel("../resources/models/fbx/bunny.fbx");
 
+	glm::vec3 lightDirection = glm::vec3(0,1, 0);
+	glf::SetShaderUniform("uLightDirection", Shader::VEC3, &lightDirection);
 	return true;
 }
 

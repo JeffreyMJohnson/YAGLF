@@ -17,6 +17,7 @@ public:
 	{
 		MAT4,
 		VEC4,
+		VEC3,
 		FLO1, 
 		INT1
 	};

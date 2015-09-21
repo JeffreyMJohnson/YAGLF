@@ -45,6 +45,9 @@ void Shader::SetUniform(const char * name, const UniformType type, const void * 
 	case VEC4:
 		glUniform4fv(location, 1, (GLfloat*)value);
 		break;
+	case VEC3:
+		glUniform3fv(location, 1, (GLfloat*)value);
+		break;
 	case FLO1:
 		glUniform1f(location, *(GLfloat*)value);
 		break;
