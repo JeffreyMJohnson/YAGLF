@@ -7,6 +7,7 @@ bool LightingApp::StartUp()
 
 void LightingApp::ShutDown()
 {
+
 }
 
 bool LightingApp::Update()

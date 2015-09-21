@@ -58,22 +58,6 @@ void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType 
 
 uint GLFramework::LoadTexture(const char * path)
 {
-	/*
-	 An output image with N components has the following components interleaved
- in this order in each pixel:
-
-     N=#comp     components
-       1           grey
-       2           grey, alpha
-       3           red, green, blue
-       4           red, green, blue, alpha
-
- If image loading fails for any reason, the return value will be NULL,
- and *x, *y, *comp will be unchanged. The function stbi_failure_reason()
- can be queried for an extremely brief, end-user unfriendly explanation
- of why the load failed.
-	*/
-
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
