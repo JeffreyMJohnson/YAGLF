@@ -138,6 +138,10 @@
     <ClCompile Include="source\AppMain.cpp" />
     <ClCompile Include="source\TexturesApp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="source\shaders\Texture_Frag_Shader.glsl" />
+    <None Include="source\shaders\Texture_Vert_Shader.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

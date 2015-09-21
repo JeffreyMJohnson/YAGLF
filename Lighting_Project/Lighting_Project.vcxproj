@@ -138,6 +138,10 @@
     <ClCompile Include="source\AppMain.cpp" />
     <ClCompile Include="source\LightingApp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="source\shaders\Lighting_Frag_Shader.glsl" />
+    <None Include="source\shaders\Lighting_Vert_Shader.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

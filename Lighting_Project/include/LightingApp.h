@@ -7,9 +7,9 @@ public:
 
 	const int WINDOW_WIDTH = 1280;
 	const int WINDOW_HEIGHT = 720;
-	const char* WINDOW_TITLE = "Textures App";
-	const char* VERTEX_SHADER_PATH = "../Textures_Project/source/shaders/Texture_Vert_shader.glsl";
-	const char* FRAGMENT_SHADER_PATH = "../Textures_Project/source/shaders/Texture_Frag_Shader.glsl";
+	const char* WINDOW_TITLE = "Lighting App";
+	const char* VERTEX_SHADER_PATH = "../Lighting_Project/source/shaders/Lighting_Vert_shader.glsl";
+	const char* FRAGMENT_SHADER_PATH = "../Lighting_Project/source/shaders/Lighting_Frag_Shader.glsl";
 	const Color CLEAR_COLOR = Color(.25f, .25f, .25f, 1);
 	const float CAMERA_FOV = glm::pi<float>() * .25f;
 	const float CAMERA_NEAR = .1f;

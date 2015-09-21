@@ -11,6 +11,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Textures_Project", "Texture
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lighting_Project", "Lighting_Project\Lighting_Project.vcxproj", "{4437F6B3-99B4-4B97-BC5F-A1E451F7A09B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D54DCF38-2FD0-466E-AA3E-C62AE22807F8} = {D54DCF38-2FD0-466E-AA3E-C62AE22807F8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
