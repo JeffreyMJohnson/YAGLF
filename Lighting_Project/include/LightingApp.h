@@ -24,5 +24,6 @@ public:
 	bool Update();
 	void Draw();
 private:
-
+	uint light;
+	float count = 0;
 };

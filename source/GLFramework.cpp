@@ -6,7 +6,7 @@ int GLFramework::counter = 0;
 Camera* GLFramework::sCamera = new Camera();
 Shader* GLFramework::sShader = new Shader();
 std::vector<uint> GLFramework::sTextures;
-
+std::vector<BaseLight*> GLFramework::sLights;
 //std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
 RenderObject* GLFramework::sRenderObject = nullptr;
 bool GLFramework::useWireframe = false;
@@ -229,11 +229,22 @@ bool GLFramework::LoadModel(Geometry & geometry)
 	return true;
 }
 
-//uint GLFramework::CreateLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor)
-//{
-//	sLights.push_back(Light(position, ambientColor, diffuseColor, specularColor));
-//	return sLights.size() - 1;
-//}
+uint GLFramework::SetDirectionalLight(const Color color, const vec3 direction)
+{
+	DirectionalLight* light = new DirectionalLight(direction, color);
+	sLights.push_back(light);
+	return sLights.size() - 1;
+}
+
+void GLFramework::SetLightDirection(const uint light, const vec3 newDirection)
+{
+	DirectionalLight* d = static_cast<DirectionalLight*>(sLights[light]);
+	if (d)
+	{
+		d->direction = newDirection;
+	}
+
+}
 
 bool GLFramework::Update()
 {
@@ -248,6 +259,17 @@ bool GLFramework::Update()
 	}
 	sShader->SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(sCamera->GetViewProjection()));
 	
+	//update lighting
+	for each(BaseLight* light in sLights)
+	{
+		if (static_cast<DirectionalLight*>(light))
+		{
+			DirectionalLight* d = (DirectionalLight*)light;
+			SetShaderUniform("lightDirection", Shader::VEC3, &d->direction);
+			SetShaderUniform("lightColor", Shader::VEC3, &d->color);
+			
+		}
+	}
 
 
 	glBindVertexArray(sRenderObject->vao);

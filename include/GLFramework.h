@@ -44,19 +44,20 @@ struct Material
 	float specularPower;
 };
 
-struct DirectionalLight
+struct BaseLight
 {
-	Color ambient, diffuse, specular;
-	vec3 direction, position;
-	float falloff = 0, phi = 0, theta = 0;
+	Color color;
+};
 
-	DirectionalLight() {};
-	DirectionalLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor)
+
+
+struct DirectionalLight : public BaseLight
+{
+	vec3 direction;
+	DirectionalLight(vec3 a_direction, Color a_color)
 	{
-		this->position = position;
-		this->ambient = ambientColor;
-		this->diffuse = diffuseColor;
-		this->specular = specularColor;
+		direction = a_direction;
+		color = a_color;
 	}
 };
 
@@ -125,7 +126,8 @@ public:
 	static bool LoadModel(const char* path);
 	static bool LoadModel(Geometry& geometry);
 
-
+	static uint SetDirectionalLight(const Color color, const vec3 direction);
+	static void SetLightDirection(const uint light, const vec3 newDirection);
 	//static uint CreateLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor);
 	//static Light& GetLight(const uint light) { return sLights[light]; }
 	
@@ -142,7 +144,7 @@ private:
 	static Shader* sShader;
 	static std::vector<uint> sTextures;
 	static RenderObject* sRenderObject;
-	static std::vector<DirectionalLight> sLights;
+	static std::vector<BaseLight*> sLights;
 	static std::vector<Material> sMaterials;
 	static bool useWireframe;
 
