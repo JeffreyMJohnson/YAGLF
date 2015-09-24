@@ -20,6 +20,7 @@ using glm::vec3;
 using glm::vec4;
 
 
+
 struct Color
 {
 	float r = 0, g = 0, b = 0, a = 0;
@@ -31,8 +32,48 @@ struct Color
 		this->b = b;
 		this->a = a;
 	}
+	vec4 GetVector4()
+	{
+		return vec4(r, g, b, a);
+	}
 };
 
+struct Material
+{
+	vec4 ambient, diffuse, specular;
+	float specularPower;
+};
+
+struct DirectionalLight
+{
+	Color ambient, diffuse, specular;
+	vec3 direction, position;
+	float falloff = 0, phi = 0, theta = 0;
+
+	DirectionalLight() {};
+	DirectionalLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor)
+	{
+		this->position = position;
+		this->ambient = ambientColor;
+		this->diffuse = diffuseColor;
+		this->specular = specularColor;
+	}
+};
+
+struct PointLight
+{
+	Color ambient, diffuse, specular;
+	vec3 position;
+	float falloff;
+	PointLight(const Color ambient, const Color diffuse, const Color specular, const glm::vec3 position, float falloff)
+	{
+		this->ambient = ambient;
+		this->diffuse = diffuse;
+		this->specular = specular;
+		this->position = position;
+		this->falloff = falloff;
+	}
+};
 
 struct Window
 {
@@ -58,6 +99,11 @@ enum Texture_Unit
 	TEN = GL_TEXTURE10
 };
 
+const Color WHITE(1, 1, 1, 1);
+const Color GREY(.5f, .5f, .5f, 1);
+const Color RED(1, 0, 0, 1);
+const Color GREEN(0, 1, 0, 1);
+
 class GLFramework
 {
 public:
@@ -79,6 +125,10 @@ public:
 	static bool LoadModel(const char* path);
 	static bool LoadModel(Geometry& geometry);
 
+
+	//static uint CreateLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor);
+	//static Light& GetLight(const uint light) { return sLights[light]; }
+	
 	static bool Update();
 	static Color GetClearColor();
 	static void SetClearColor(const Color color);
@@ -92,6 +142,8 @@ private:
 	static Shader* sShader;
 	static std::vector<uint> sTextures;
 	static RenderObject* sRenderObject;
+	static std::vector<DirectionalLight> sLights;
+	static std::vector<Material> sMaterials;
 	static bool useWireframe;
 
 	static uint LoadObject();

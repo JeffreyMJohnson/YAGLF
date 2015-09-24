@@ -42,6 +42,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	
 
 	return true;
 }
@@ -228,6 +229,12 @@ bool GLFramework::LoadModel(Geometry & geometry)
 	return true;
 }
 
+//uint GLFramework::CreateLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor)
+//{
+//	sLights.push_back(Light(position, ambientColor, diffuseColor, specularColor));
+//	return sLights.size() - 1;
+//}
+
 bool GLFramework::Update()
 {
 	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -240,6 +247,9 @@ bool GLFramework::Update()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	sShader->SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(sCamera->GetViewProjection()));
+	
+
+
 	glBindVertexArray(sRenderObject->vao);
 	glDrawElements(GL_TRIANGLES, sRenderObject->indexCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

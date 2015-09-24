@@ -147,6 +147,7 @@
     <ClInclude Include="include\RenderObject.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\tiny_obj_loader\tiny_obj_loader.h" />
+    <ClInclude Include="lights\include\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc" />
