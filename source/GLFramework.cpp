@@ -321,6 +321,12 @@ void GLFramework::Cleanup()
 		delete sRenderObject;
 	}
 
+	for each(void * light in sLights)
+	{
+		delete light;
+	}
+	sLights.clear();
+
 
 }
 
@@ -348,12 +354,14 @@ bool GLFramework::LoadBuffers(const Geometry & geometry)
 	glEnableVertexAttribArray(0);//position
 	glEnableVertexAttribArray(1);//color in shader right now.
 	glEnableVertexAttribArray(2);//normal
-	glEnableVertexAttribArray(3);//UV coord
+	glEnableVertexAttribArray(3);//tangent
+	glEnableVertexAttribArray(4);//UV coord
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 1));
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
+	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 4));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
