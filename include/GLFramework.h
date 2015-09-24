@@ -111,12 +111,15 @@ public:
 
 
 	static bool Startup(const int width, const int height, const char* title, const Color clearColor);
+	
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
 	static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
+	
 	static uint LoadTexture(const char * path);
 	static void SetTexture(Texture_Unit unit, uint texture);
 
 	static void SetWireframe(bool value);
+	
 	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
 	static bool SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far);
 	static vec3 GetCameraPosition() { return sCamera->GetPosition(); }
@@ -130,6 +133,8 @@ public:
 	static void SetLightDirection(const uint light, const vec3 newDirection);
 	//static uint CreateLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor);
 	//static Light& GetLight(const uint light) { return sLights[light]; }
+
+	static float GetTime() { return glfwGetTime(); }
 	
 	static bool Update();
 	static Color GetClearColor();
@@ -147,6 +152,7 @@ private:
 	static std::vector<BaseLight*> sLights;
 	static std::vector<Material> sMaterials;
 	static bool useWireframe;
+	
 
 	static uint LoadObject();
 	static bool LoadBuffers(const Geometry& geometry);

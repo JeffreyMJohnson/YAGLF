@@ -28,5 +28,6 @@ public:
 	Geometry BuildQuad();
 
 	std::vector<uint> textures;
+	uint mTexture, mNormalMap;
 
 };
