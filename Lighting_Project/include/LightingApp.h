@@ -10,7 +10,7 @@ public:
 	const char* WINDOW_TITLE = "Lighting App";
 	const char* VERTEX_SHADER_PATH = "../Lighting_Project/source/shaders/Lighting_Vert_shader.glsl";
 	const char* FRAGMENT_SHADER_PATH = "../Lighting_Project/source/shaders/Lighting_Frag_Shader.glsl";
-	const Color CLEAR_COLOR = Color(.25f, .25f, .25f, 1);
+	const Color CLEAR_COLOR = GREY;
 	const float CAMERA_FOV = glm::pi<float>() *.25f;
 	const float CAMERA_NEAR = .1f;
 	const float CAMERA_FAR = 1000.0f;
