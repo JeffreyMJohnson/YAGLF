@@ -19,7 +19,8 @@ public:
 		VEC4,
 		VEC3,
 		FLO1, 
-		INT1
+		INT1, 
+		UINT1
 	};
 
 	const bool LoadShader(const char* vertexPath, const char* fragmentPath);

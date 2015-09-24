@@ -11,6 +11,7 @@ uniform vec3 lightDirection;
 uniform sampler2D diffuse;
 uniform sampler2D normal;
 
+
 void main() 
 {
 	mat3 TBN = mat3(normalize(vTangent), normalize(vBiTangent), normalize(vNormal));

@@ -53,6 +53,10 @@ void Shader::SetUniform(const char * name, const UniformType type, const void * 
 		break;
 	case INT1:
 		glUniform1i(location, *(GLint*)value);
+		break;
+	case UINT1:
+		glUniform1ui(location, *(GLuint*)value);
+		break;
 	}
 }
 

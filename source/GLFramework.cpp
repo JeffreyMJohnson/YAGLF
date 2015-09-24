@@ -251,7 +251,6 @@ bool GLFramework::Update()
 	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		return false;
 
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (useWireframe)
 	{
@@ -267,7 +266,6 @@ bool GLFramework::Update()
 			DirectionalLight* d = (DirectionalLight*)light;
 			SetShaderUniform("lightDirection", Shader::VEC3, &d->direction);
 			SetShaderUniform("lightColor", Shader::VEC3, &d->color);
-			
 		}
 	}
 
