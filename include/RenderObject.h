@@ -31,5 +31,6 @@ struct RenderObject
 	uint vao = 0, vbo = 0, ibo = 0, indexCount = 0;
 
 	void LoadBuffers(Geometry& geometry);
+	void Draw();
 	void DeleteBuffers();
 };

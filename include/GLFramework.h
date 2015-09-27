@@ -16,6 +16,14 @@
 #include <map>
 #include <vector>
 
+/*
+	TODO:
+		implement draw call allowing user to choose to draw object or not each frame.
+		get user access to shaders out, making shaders private to framework. can have the shader flexible enough
+			to handle scenarios.
+
+*/
+
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
@@ -113,6 +121,9 @@ public:
 
 	static bool Startup(const int width, const int height, const char* title, const Color clearColor);
 	
+	static uint CreateQuad();
+
+
 	static bool SetShader(const char* vertexPath, const char* fragmentPath);
 	static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
 	
@@ -128,7 +139,7 @@ public:
 	static void MoveCamera(const float distance);
 
 	static bool LoadModel(const char* path);
-	static bool LoadModel(Geometry& geometry);
+	static uint LoadModel(Geometry& geometry);
 
 	static uint SetDirectionalLight(const Color color, const vec3 direction);
 	static void SetLightDirection(const uint light, const vec3 newDirection);
@@ -149,13 +160,14 @@ private:
 	static Camera* sCamera;
 	static Shader* sShader;
 	static std::vector<uint> sTextures;
-	static RenderObject* sRenderObject;
+	static std::vector<RenderObject> sRenderObjects;
 	static std::vector<BaseLight*> sLights;
 	static std::vector<Material> sMaterials;
 	static bool useWireframe;
 	
 
 	static uint LoadObject();
-	static bool LoadBuffers(const Geometry& geometry);
+	//static bool LoadBuffers(const Geometry& geometry);
 	static void UpdateFlyCamControls();
+	static Geometry BuildQuad();
 };

@@ -16,7 +16,7 @@ bool TexturesApp::StartUp()
 	glf::SetShaderUniform("diffuse", Shader::INT1, &mTexture);
 	glf::SetCameraProjection(CAMERA_FOV, WINDOW_WIDTH / (float)WINDOW_HEIGHT, CAMERA_NEAR, CAMERA_FAR);
 	glf::SetCameraView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
-	glf::LoadModel(BuildQuad());
+	uint quad = glf::CreateQuad();
 
 
 	//glf::LoadModel("../resources/models/fbx/soulspear.fbx");

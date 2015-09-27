@@ -7,7 +7,7 @@ Shader* GLFramework::sShader = new Shader();
 std::vector<uint> GLFramework::sTextures;
 std::vector<BaseLight*> GLFramework::sLights;
 //std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
-RenderObject* GLFramework::sRenderObject = nullptr;
+std::vector<RenderObject> GLFramework::sRenderObjects;
 bool GLFramework::useWireframe = false;
 
 bool GLFramework::Startup(const int width, const int height, const char * title, const Color clearColor)
@@ -45,6 +45,11 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	Keyboard::Init();
 
 	return true;
+}
+
+uint GLFramework::CreateQuad()
+{
+	return LoadModel(BuildQuad());
 }
 
 bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
@@ -223,10 +228,12 @@ bool GLFramework::LoadModel(const char * path)
 	return true;
 }
 
-bool GLFramework::LoadModel(Geometry & geometry)
+uint GLFramework::LoadModel(Geometry& geometry)
 {
-	LoadBuffers(geometry);
-	return true;
+	RenderObject rendObj;
+	rendObj.LoadBuffers(geometry);
+	sRenderObjects.push_back(rendObj);
+	return sRenderObjects.size() - 1;
 }
 
 uint GLFramework::SetDirectionalLight(const Color color, const vec3 direction)
@@ -271,12 +278,12 @@ bool GLFramework::Update()
 		}
 	}
 
-
-	glBindVertexArray(sRenderObject->vao);
-	glDrawElements(GL_TRIANGLES, sRenderObject->indexCount, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-
+	//TODO:incorporate into draw call, allow user to choose to draw or not.
+	for each (RenderObject rendObj in sRenderObjects)
+	{
+		rendObj.Draw();
+	}
+	
 	glfwSwapBuffers(sWindow->handle);
 	glfwPollEvents();
 	return true;
@@ -315,58 +322,55 @@ void GLFramework::Cleanup()
 	{
 		delete sShader;
 	}
-	if (nullptr != sRenderObject)
-	{
-		sRenderObject->DeleteBuffers();
-		delete sRenderObject;
-	}
 
 	for each(void * light in sLights)
 	{
 		delete light;
 	}
 	sLights.clear();
-
-}
-
-bool GLFramework::LoadBuffers(const Geometry & geometry)
-{
-	if (nullptr == sRenderObject)
+	for each (RenderObject rendObj in sRenderObjects)
 	{
-		sRenderObject = new RenderObject();
+		rendObj.DeleteBuffers();
 	}
-	glGenVertexArrays(1, &sRenderObject->vao);
-	glGenBuffers(1, &sRenderObject->vbo);
-	glGenBuffers(1, &sRenderObject->ibo);
-
-	glBindVertexArray(sRenderObject->vao);
-
-
-	sRenderObject->indexCount = geometry.indices.size();
-
-	glBindBuffer(GL_ARRAY_BUFFER, sRenderObject->vbo);
-	glBufferData(GL_ARRAY_BUFFER, geometry.vertices.size() * sizeof(Vertex), geometry.vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sRenderObject->ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry.indices.size() * sizeof(uint), geometry.indices.data(), GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);//position
-	glEnableVertexAttribArray(1);//color in shader right now.
-	glEnableVertexAttribArray(2);//normal
-	glEnableVertexAttribArray(3);//tangent
-	glEnableVertexAttribArray(4);//UV coord
-
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 1));
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
-	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 4));
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	return true;
+	sRenderObjects.clear();
 }
+
+//bool GLFramework::LoadBuffers(const Geometry & geometry)
+//{
+//	RenderObject rendObj;
+//	glGenVertexArrays(1, &rendObj.vao);
+//	glGenBuffers(1, &rendObj.vbo);
+//	glGenBuffers(1, &rendObj.ibo);
+//
+//	glBindVertexArray(rendObj.vao);
+//
+//
+//	rendObj.indexCount = geometry.indices.size();
+//
+//	glBindBuffer(GL_ARRAY_BUFFER, rendObj.vbo);
+//	glBufferData(GL_ARRAY_BUFFER, geometry.vertices.size() * sizeof(Vertex), geometry.vertices.data(), GL_STATIC_DRAW);
+//
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendObj.ibo);
+//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry.indices.size() * sizeof(uint), geometry.indices.data(), GL_STATIC_DRAW);
+//
+//	glEnableVertexAttribArray(0);//position
+//	glEnableVertexAttribArray(1);//color in shader right now.
+//	glEnableVertexAttribArray(2);//normal
+//	glEnableVertexAttribArray(3);//tangent
+//	glEnableVertexAttribArray(4);//UV coord
+//
+//	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+//	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 1));
+//	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(vec4) * 2));
+//	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 3));
+//	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(vec4) * 4));
+//
+//	glBindVertexArray(0);
+//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//	sRenderObjects.push_back(rendObj);
+//	return sRenderObjects.size()-1;
+//}
 
 void GLFramework::UpdateFlyCamControls()
 {
@@ -394,4 +398,42 @@ void GLFramework::UpdateFlyCamControls()
 	{
 		SlideCamera(0,-1);
 	}
+}
+
+Geometry GLFramework::BuildQuad()
+{
+	Geometry quad;
+	Vertex v1;
+	v1.position = vec4(-5, 0, 5, 1);
+	v1.normal = vec4(0, 1, 0, 0);
+	v1.tangent = vec4(1, 0, 0, 0);
+	v1.UV = vec2(0, 1);
+	quad.vertices.push_back(v1);
+	Vertex v2;
+	v2.position = vec4(5, 0, 5, 1);
+	v2.normal = vec4(0, 1, 0, 0);
+	v2.tangent = vec4(1, 0, 0, 0);
+	v2.UV = vec2(1, 1);
+	quad.vertices.push_back(v2);
+	Vertex v3;
+	v3.position = vec4(5, 0, -5, 1);
+	v3.normal = vec4(0, 1, 0, 0);
+	v3.tangent = vec4(1, 0, 0, 0);
+	v3.UV = vec2(1, 0);
+	quad.vertices.push_back(v3);
+	Vertex v4;
+	v4.position = vec4(-5, 0, -5, 1);
+	v4.normal = vec4(0, 1, 0, 0);
+	v4.tangent = vec4(1, 0, 0, 0);
+	v4.UV = vec2(0, 0);
+	quad.vertices.push_back(v4);
+
+	quad.indices.push_back(0);
+	quad.indices.push_back(1);
+	quad.indices.push_back(2);
+	quad.indices.push_back(0);
+	quad.indices.push_back(2);
+	quad.indices.push_back(3);
+
+	return quad;
 }
