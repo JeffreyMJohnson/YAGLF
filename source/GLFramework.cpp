@@ -1,5 +1,4 @@
 #include "GLFramework.h"
-#include "..\include\GLFramework.h"
 
 Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
@@ -43,6 +42,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	
+	Keyboard::Init();
 
 	return true;
 }
@@ -251,6 +251,8 @@ bool GLFramework::Update()
 	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		return false;
 
+	UpdateFlyCamControls();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (useWireframe)
 	{
@@ -325,7 +327,6 @@ void GLFramework::Cleanup()
 	}
 	sLights.clear();
 
-
 }
 
 bool GLFramework::LoadBuffers(const Geometry & geometry)
@@ -365,4 +366,32 @@ bool GLFramework::LoadBuffers(const Geometry & geometry)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	return true;
+}
+
+void GLFramework::UpdateFlyCamControls()
+{
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_W) || Keyboard::IsKeyRepeat(Keyboard::KEY_W))
+	{
+		MoveCamera(1);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_X) || Keyboard::IsKeyRepeat(Keyboard::KEY_X))
+	{
+		MoveCamera(-1);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_A) || Keyboard::IsKeyRepeat(Keyboard::KEY_A))
+	{
+		SlideCamera(-1, 0);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_D) || Keyboard::IsKeyRepeat(Keyboard::KEY_D))
+	{
+		SlideCamera(1, 0);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_E) || Keyboard::IsKeyRepeat(Keyboard::KEY_E))
+	{
+		SlideCamera(0, 1);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_C) || Keyboard::IsKeyRepeat(Keyboard::KEY_C))
+	{
+		SlideCamera(0,-1);
+	}
 }

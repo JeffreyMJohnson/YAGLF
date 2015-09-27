@@ -28,6 +28,9 @@
     <Filter Include="Header Files\lights">
       <UniqueIdentifier>{58625539-db35-4a42-a2d6-e0289ed0b11d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\input">
+      <UniqueIdentifier>{63d73be7-a619-4527-a224-d6c6e0805002}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GLFramework.h">
@@ -50,6 +53,12 @@
     </ClInclude>
     <ClInclude Include="lights\include\Light.h">
       <Filter>Header Files\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Keyboard.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Mouse.h">
+      <Filter>Header Files\input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

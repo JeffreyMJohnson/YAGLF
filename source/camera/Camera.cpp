@@ -3,12 +3,15 @@
 void Camera::Slide(const float hDistance, const float vDistance)
 {
 	mPosition += glm::vec3(hDistance, vDistance, 0);
+	mTarget += glm::vec3(hDistance, vDistance, 0);
 	UpdateView();
 }
 
 void Camera::Move(const float distance)
 {
-	mPosition += glm::vec3(0, 0, distance);
+	glm::vec3 direction = glm::normalize(mTarget - mPosition);
+	mPosition += distance * direction;
+	mTarget += distance * direction;
 	UpdateView();
 }
 

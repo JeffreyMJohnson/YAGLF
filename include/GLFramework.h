@@ -7,6 +7,7 @@
 #include "camera\Camera.h"
 #include "Shader.h"
 #include "RenderObject.h"
+#include "input\Keyboard.h"
 #include "tiny_obj_loader\tiny_obj_loader.h"
 #include "fbx_loader\FBXFile.h"
 #include "stb\stb_image.h"
@@ -156,4 +157,5 @@ private:
 
 	static uint LoadObject();
 	static bool LoadBuffers(const Geometry& geometry);
+	static void UpdateFlyCamControls();
 };
