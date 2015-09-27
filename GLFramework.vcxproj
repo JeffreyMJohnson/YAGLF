@@ -143,6 +143,8 @@
   <ItemGroup>
     <ClInclude Include="include\camera\Camera.h" />
     <ClInclude Include="include\GLFramework.h" />
+    <ClInclude Include="include\input\Keyboard.h" />
+    <ClInclude Include="include\input\Mouse.h" />
     <ClInclude Include="include\Plane.h" />
     <ClInclude Include="include\RenderObject.h" />
     <ClInclude Include="include\Shader.h" />
