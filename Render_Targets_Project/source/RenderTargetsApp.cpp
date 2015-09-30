@@ -108,6 +108,8 @@ bool RenderTargetsApp::StartUp()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+
+	
 	/*
 	setup shaders
 	*/
@@ -116,7 +118,7 @@ bool RenderTargetsApp::StartUp()
 		return false;
 	}
 
-	Gizmos::addSphere(vec3(0, 5, 0), .5f, 8, 8, vec4(1, 1, 0, 1));
+	Gizmos::addSphere(vec3(0, 1, 0), .5f, 8, 8, vec4(1, 1, 0, 1));
 
 	camera.StartupPerspective(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR, CAMERA_FAR);
 	camera.SetView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
@@ -147,32 +149,38 @@ bool RenderTargetsApp::Update()
 	/*
 	render to framebuffer
 	*/
+
+	// BACK BUFFER, FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
 	glViewport(0, 0, 512, 512);
+
 	glClearColor(0.75f, 0.75f, 0.75f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// draw our meshes, or gizmos, to the render target
 	Gizmos::draw(camera.GetViewProjection());
 
+
+	// FRONT BUFFER? COLOR BUFFER?
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, 1280, 720);
 
-	//glClearColor(0.25f, 0.25f, 0.25f, 1);
+	glClearColor(0.25f, 0.25f, 0.25f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	Gizmos::clear();
 
 	shader.SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(camera.GetViewProjection()));
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mFBOTexture);
 
-	shader.SetUniform("diffuse", Shader::INT1, &mFBOTexture);
+	int texUnit = 0;
+
+	shader.SetUniform("diffuse", Shader::INT1, &texUnit);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 
-	Gizmos::draw(camera.GetViewProjection());
+	//Gizmos::draw(camera.GetViewProjection());	// draws 
 
 	return true;
 }

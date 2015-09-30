@@ -30,4 +30,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="source\shaders\Frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="source\shaders\Vert.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
