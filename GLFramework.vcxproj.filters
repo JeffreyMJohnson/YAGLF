@@ -31,6 +31,9 @@
     <Filter Include="Header Files\input">
       <UniqueIdentifier>{63d73be7-a619-4527-a224-d6c6e0805002}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\gizmos">
+      <UniqueIdentifier>{058614ff-fef2-4fc0-8369-3532573f95b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GLFramework.h">
@@ -60,6 +63,9 @@
     <ClInclude Include="include\input\Mouse.h">
       <Filter>Header Files\input</Filter>
     </ClInclude>
+    <ClInclude Include="include\gizmos\Gizmos.h">
+      <Filter>Header Files\gizmos</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GLFramework.cpp">
@@ -85,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\gizmos\Gizmos.cpp">
+      <Filter>Header Files\gizmos</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

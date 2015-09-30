@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\camera\Camera.h" />
+    <ClInclude Include="include\gizmos\Gizmos.h" />
     <ClInclude Include="include\GLFramework.h" />
     <ClInclude Include="include\input\Keyboard.h" />
     <ClInclude Include="include\input\Mouse.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="lights\include\Light.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\gizmos\Gizmos.cpp" />
     <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc" />
     <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\GLFramework.cpp" />
