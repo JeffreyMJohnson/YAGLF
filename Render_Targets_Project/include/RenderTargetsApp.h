@@ -1,14 +1,16 @@
 #pragma once
 #include "GameApp.h"
+#include "gl_core_4_4\gl_core_4_4.h"
+#include "GLFW\glfw3.h"
 
 class RenderTargetsApp : public GameApp
 {
 public:
 	const int WINDOW_WIDTH = 1280;
 	const int WINDOW_HEIGHT = 720;
-	const char* WINDOW_TITLE = "Textures App";
-	const char* VERTEX_SHADER_PATH = "../Render_Targets_Project";
-	const char* FRAGMENT_SHADER_PATH = "../Render_Targets_Project";
+	const char* WINDOW_TITLE = "Render Targetgs App";
+	const char* VERTEX_SHADER_PATH = "../Render_Targets_Project/source/shaders/Vert.glsl";
+	const char* FRAGMENT_SHADER_PATH = "../Render_Targets_Project/source/shaders/Frag.glsl";
 	const Color CLEAR_COLOR = Color(.25f, .25f, .25f, 1);
 	const float CAMERA_FOV = glm::pi<float>() * .25f;
 	const float CAMERA_NEAR = .1f;
@@ -24,6 +26,10 @@ public:
 
 private:
 	uint mFBO;
+
+	Window window;
+	Shader shader;
+	Camera camera;
 
 };
 
