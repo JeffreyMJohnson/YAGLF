@@ -2,6 +2,7 @@
 #include "GameApp.h"
 #include "gl_core_4_4\gl_core_4_4.h"
 #include "GLFW\glfw3.h"
+#include "../../include/gizmos/Gizmos.h"
 
 class RenderTargetsApp : public GameApp
 {
@@ -26,6 +27,11 @@ public:
 
 private:
 	uint mFBO;
+	uint mFBOTexture;
+	uint mDepthBuffer;
+
+	uint VAO, VBO, IBO;
+
 
 	Window window;
 	Shader shader;
