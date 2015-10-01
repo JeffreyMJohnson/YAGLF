@@ -30,12 +30,10 @@ private:
 	uint mFBOTexture;
 	uint mDepthBuffer;
 
-	uint VAO, VBO, IBO;
+	uint mPlane;
 
 
-	Window window;
-	Shader shader;
-	Camera camera;
+	Geometry BuildPlane();
 
 };
 

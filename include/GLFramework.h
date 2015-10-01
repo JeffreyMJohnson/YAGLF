@@ -138,7 +138,7 @@ public:
 	static void SlideCamera(const float hDistance, const float vDistance);
 	static void MoveCamera(const float distance);
 
-	static bool LoadModel(const char* path);
+	static uint LoadModel(const char* path);
 	static uint LoadModel(Geometry& geometry);
 
 	static uint SetDirectionalLight(const Color color, const vec3 direction);

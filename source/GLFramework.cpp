@@ -122,7 +122,7 @@ void GLFramework::MoveCamera(const float distance)
 	sCamera->Move(distance);
 }
 
-bool GLFramework::LoadModel(const char * path)
+uint GLFramework::LoadModel(const char * path)
 {
 	bool success = true;
 	//find extension
@@ -223,9 +223,7 @@ bool GLFramework::LoadModel(const char * path)
 		return false;
 	}
 
-	LoadModel(geometry);
-
-	return true;
+	return LoadModel(geometry);
 }
 
 uint GLFramework::LoadModel(Geometry& geometry)

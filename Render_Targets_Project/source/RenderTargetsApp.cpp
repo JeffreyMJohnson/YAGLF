@@ -5,35 +5,37 @@ typedef GLFramework glf;
 
 bool RenderTargetsApp::StartUp()
 {
-	//startup
-	if (!glfwInit())
-	{
-		return false;
-	}
+	////startup
+	//if (!glfwInit())
+	//{
+	//	return false;
+	//}
 
-	window.width = WINDOW_WIDTH;
-	window.height = WINDOW_HEIGHT;
-	window.title = WINDOW_TITLE;
+	//window.width = WINDOW_WIDTH;
+	//window.height = WINDOW_HEIGHT;
+	//window.title = WINDOW_TITLE;
 
-	window.handle = glfwCreateWindow(window.width, window.height, window.title, nullptr, nullptr);
+	//window.handle = glfwCreateWindow(window.width, window.height, window.title, nullptr, nullptr);
 
-	if (nullptr == window.handle)
-	{
-		glfwTerminate();
-		return false;
-	}
+	//if (nullptr == window.handle)
+	//{
+	//	glfwTerminate();
+	//	return false;
+	//}
 
-	glfwMakeContextCurrent(window.handle);
+	//glfwMakeContextCurrent(window.handle);
 
-	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
-	{
-		glfwDestroyWindow(window.handle);
-		glfwTerminate();
-		return false;
-	}
+	//if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
+	//{
+	//	glfwDestroyWindow(window.handle);
+	//	glfwTerminate();
+	//	return false;
+	//}
 
-	window.clearColor = CLEAR_COLOR;
-	glClearColor(window.clearColor.r, window.clearColor.g, window.clearColor.b, window.clearColor.a);
+	//window.clearColor = CLEAR_COLOR;
+	//glClearColor(window.clearColor.r, window.clearColor.g, window.clearColor.b, window.clearColor.a);
+	glf::Startup(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, CLEAR_COLOR);
+
 	/*
 	tut code here
 
@@ -82,7 +84,7 @@ bool RenderTargetsApp::StartUp()
 	/*
 	setup plane that can use texture
 	*/
-	float vertexData[] = {
+	/*float vertexData[] = {
 		-5, 0, -5, 1, 0, 0,
 		5, 0, -5, 1, 1, 0,
 		5, 10, -5, 1, 1, 1,
@@ -106,8 +108,8 @@ bool RenderTargetsApp::StartUp()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,	sizeof(float) * 6, ((char*)0) + 16);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);*/
+	mPlane = glf::
 
 	
 	/*
@@ -187,4 +189,42 @@ bool RenderTargetsApp::Update()
 
 void RenderTargetsApp::Draw()
 {
+}
+
+Geometry RenderTargetsApp::BuildPlane()
+{
+	Geometry plane;
+	Vertex v1;
+	v1.position = vec4(-5, 0, -5, 1);
+	v1.normal = vec4(0, 1, 0, 0);
+	v1.tangent = vec4(1, 0, 0, 0);
+	v1.UV = vec2(0, 1);
+	plane.vertices.push_back(v1);
+	Vertex v2;
+	v2.position = vec4(5, 0, -5, 1);
+	v2.normal = vec4(0, 1, 0, 0);
+	v2.tangent = vec4(1, 0, 0, 0);
+	v2.UV = vec2(1, 1);
+	plane.vertices.push_back(v2);
+	Vertex v3;
+	v3.position = vec4(5, 10, -5, 1);
+	v3.normal = vec4(0, 1, 0, 0);
+	v3.tangent = vec4(1, 0, 0, 0);
+	v3.UV = vec2(1, 0);
+	plane.vertices.push_back(v3);
+	Vertex v4;
+	v4.position = vec4(-5, 10, -5, 1);
+	v4.normal = vec4(0, 1, 0, 0);
+	v4.tangent = vec4(1, 0, 0, 0);
+	v4.UV = vec2(0, 0);
+	plane.vertices.push_back(v4);
+
+	plane.indices.push_back(0);
+	plane.indices.push_back(1);
+	plane.indices.push_back(2);
+	plane.indices.push_back(0);
+	plane.indices.push_back(2);
+	plane.indices.push_back(3);
+
+	return plane;
 }
