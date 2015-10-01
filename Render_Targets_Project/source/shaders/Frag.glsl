@@ -1,10 +1,12 @@
-#version 330
+#version 410
 
 in vec2 vTexCoord;
 
 out vec4 FragColor;
 
+uniform sampler2D diffuse;
+
 void main() 
 {
-	FragColor = vec4(1,1,1,1);
+	FragColor = texture(diffuse, vTexCoord);
 }
