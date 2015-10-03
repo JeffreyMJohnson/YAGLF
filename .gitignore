@@ -6,6 +6,9 @@ FBXLoader_d.lib
 FBXLoader.lib
 glfw3.lib
 
+#p4merge files
+*.orig
+
 [Tt]humbs.db
 
 # User-specific files
