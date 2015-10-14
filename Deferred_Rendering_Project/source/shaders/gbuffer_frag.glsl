@@ -16,7 +16,7 @@ void main()
 	// we simply output the data
 	// Note: you could use a material colour,
 	// or sample a texture for albedo
-	gpassAlbedo = texture(albedoTex, vTexCoord).xyz * ambientLight;// vec3(1));
+	gpassAlbedo =  vec3(1);//texture(albedoTex, vTexCoord).xyz * ambientLight;
 	gpassPosition = vPosition.xyz;
 	gpassNormal = vNormal.xyz;
 }

@@ -49,11 +49,13 @@ private:
 
 	//uint mQuadVAO, mVBO, mIBO;
 	GameObject mQuad;
+	GameObject mCube;
 
 	Window window;
 	Shader mGBufferShader;
 	Shader mCompositeShader;
 	Shader mDirectionalLightShader;
+	Shader mPointLightShader;
 	Camera camera;
 
 	std::vector<GameObject> mSceneGeometry;
@@ -61,7 +63,8 @@ private:
 
 	void LoadModel(std::string path);
 	void drawDirectionalLight(const glm::vec3& direction, const glm::vec3& diffuse);
-
+	void drawPointLight(const glm::vec3& position, float radius, const glm::vec3& diffuse);
+	
 	GLuint spear_diffuse = 0;
 	Light ambientLight;
 

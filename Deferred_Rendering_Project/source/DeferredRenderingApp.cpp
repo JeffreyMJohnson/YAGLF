@@ -50,6 +50,10 @@ bool DeferredRenderingApp::StartUp()
 	{
 		return false;
 	}
+	if (!mPointLightShader.LoadShader((SHADER_PATH + std::string("point_light_vert.glsl")).c_str(), (SHADER_PATH + std::string("point_light_frag.glsl")).c_str()))
+	{
+		return false;
+	}
 
 	camera.StartupPerspective(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR, CAMERA_FAR);
 	camera.SetView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
@@ -165,7 +169,48 @@ bool DeferredRenderingApp::StartUp()
 	//implement ambient lighting
 	ambientLight.ambient = vec3(1,1,0);
 
+	//cube geometry
+	float cubeVertexData[] = {
+		-1, -1, 1, 1,
+		1, -1, 1, 1,
+		1, -1, -1, 1,
+		-1, -1, -1, 1,
+		-1, 1, 1, 1,
+		1, 1, 1, 1,
+		1, 1, -1, 1,
+		-1, 1, -1, 1,
+	};
+	unsigned int cubeIndexData[] = {
+		0, 5, 4,
+		0, 1, 5,
+		1, 6, 5,
+		1, 2, 6,
+		2, 7, 6,
+		2, 3, 7,
+		3, 4, 7,
+		3, 0, 4,
+		4, 6, 7,
+		4, 5, 6,
+		3, 1, 0,
+		3, 2, 1
+	};
 
+	mCube.triCount = 3 * 12;
+
+	glGenVertexArrays(1, &mCube.vao);
+	glBindVertexArray(mCube.vao);
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 8, cubeVertexData, GL_STATIC_DRAW);
+	GLuint ibo;
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mCube.triCount * sizeof(uint), cubeIndexData, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return true;
 }
@@ -228,6 +273,24 @@ bool DeferredRenderingApp::Update()
 	glBindTexture(GL_TEXTURE_2D, mNormalTexture);
 	// draw lights as fullscreen quads
 	drawDirectionalLight(glm::vec3(-1), glm::vec3(1));
+
+	//render point light
+	glUseProgram(mPointLightShader.GetProgram());
+	loc = glGetUniformLocation(mPointLightShader.GetProgram(), "ProjectionView");
+	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(camera.GetViewProjection()));
+	loc = glGetUniformLocation(mPointLightShader.GetProgram(), "positionTexture");
+	glUniform1i(loc, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mPositionTexture);
+	loc = glGetUniformLocation(mPointLightShader.GetProgram(), "normalTexture");
+	glUniform1i(loc, 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mNormalTexture);
+	glCullFace(GL_FRONT);
+	float t = (float)glfwGetTime();
+	drawPointLight(glm::vec3(sinf(t) * 5, 3, cosf(t) * 5), 5, glm::vec3(1, 0, 0));
+	drawPointLight(glm::vec3(sinf(t) * -5, 3, cosf(t) * -5), 5, glm::vec3(0, 1, 0));
+	glCullFace(GL_BACK);
 	glDisable(GL_BLEND);
 
 	// Composite Pass: render a quad and combine albedo and light
@@ -323,5 +386,21 @@ void DeferredRenderingApp::drawDirectionalLight(const glm::vec3& direction, cons
 	glBindVertexArray(mQuad.vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
+}
+
+void DeferredRenderingApp::drawPointLight(const glm::vec3 & position, float radius, const glm::vec3 & diffuse)
+{
+	glm::vec4 viewSpacePosition = camera.GetView() * glm::vec4(position, 1);
+	int loc = glGetUniformLocation(mPointLightShader.GetProgram(), "lightPosition");
+	glUniform3fv(loc, 1, glm::value_ptr(position));
+	loc = glGetUniformLocation(mPointLightShader.GetProgram(), "lightPositionView");
+	glUniform3fv(loc, 1, glm::value_ptr(viewSpacePosition));
+	loc = glGetUniformLocation(mPointLightShader.GetProgram(), "lightRadius");
+	glUniform1f(loc, radius);
+	loc = glGetUniformLocation(mPointLightShader.GetProgram(), "lightDiffuse");
+	glUniform3fv(loc, 1, glm::value_ptr(diffuse));
+
+	glBindVertexArray(mCube.vao);
+	glDrawElements(GL_TRIANGLES, mCube.triCount, GL_UNSIGNED_INT, nullptr);
 }
 
