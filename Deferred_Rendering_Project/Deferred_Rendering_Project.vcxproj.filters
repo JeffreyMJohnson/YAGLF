@@ -40,7 +40,9 @@
     <Text Include="source\shaders\composite_vert.glsl">
       <Filter>Shaders</Filter>
     </Text>
-    <Text Include="source\shaders\composite_frag.glsl" />
     <Text Include="source\shaders\directional_light_frag.glsl" />
+    <Text Include="source\shaders\composite_frag.glsl">
+      <Filter>Shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

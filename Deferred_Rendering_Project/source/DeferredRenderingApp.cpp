@@ -137,6 +137,36 @@ bool DeferredRenderingApp::StartUp()
 	//FBXFile file;
 	std::string path = "../resources/models/fbx/soulspear.fbx";
 	LoadModel(path);
+
+	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+	unsigned char* data = stbi_load("../resources/textures/soulspear/soulspear_diffuse.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	switch (imageFormat)
+	{
+	case 1: imageFormat = GL_RED; break;
+	case 2: imageFormat = GL_RG; break;
+	case 3: imageFormat = GL_RGB; break;
+	case 4: imageFormat = GL_RGBA; break;
+	}
+
+	if (data == nullptr)
+	{
+		std::cout << "error loading texture.\n" << stbi_failure_reason();
+	}
+	
+	glGenTextures(1, &spear_diffuse);
+	glBindTexture(GL_TEXTURE_2D, spear_diffuse);
+	glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight, 0, imageFormat, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+
+	//implement ambient lighting
+	ambientLight.ambient = vec3(1,1,0);
+
+
+
 	return true;
 }
 
@@ -164,6 +194,12 @@ bool DeferredRenderingApp::Update()
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(camera.GetViewProjection()));
 	loc = glGetUniformLocation(mGBufferShader.GetProgram(), "View");
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
+	loc = glGetUniformLocation(mGBufferShader.GetProgram(), "albedoTex");
+	glUniform1i(loc, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, spear_diffuse);
+	loc = glGetUniformLocation(mGBufferShader.GetProgram(), "ambientLight");
+	glUniform3fv(loc, 1, glm::value_ptr(ambientLight.ambient));
 
 	// draw our scene, in this example just the Stanford Bunny
 
@@ -287,4 +323,5 @@ void DeferredRenderingApp::drawDirectionalLight(const glm::vec3& direction, cons
 	glBindVertexArray(mQuad.vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
-}
+}
+

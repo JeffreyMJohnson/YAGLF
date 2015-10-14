@@ -10,6 +10,11 @@ struct GameObject
 	uint triCount = 0;
 };
 
+struct Light
+{
+	vec3 ambient, diffuse, specular;
+};
+
 class DeferredRenderingApp : public GameApp
 {
 public:
@@ -56,6 +61,9 @@ private:
 
 	void LoadModel(std::string path);
 	void drawDirectionalLight(const glm::vec3& direction, const glm::vec3& diffuse);
+
+	GLuint spear_diffuse = 0;
+	Light ambientLight;
 
 };
 
