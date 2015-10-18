@@ -3,7 +3,8 @@
 Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
 Camera* GLFramework::sCamera = new Camera();
-Shader* GLFramework::sShader = new Shader();
+//Shader* GLFramework::sShader = new Shader();
+std::vector<Shader*> GLFramework::sShaders { nullptr };
 std::vector<uint> GLFramework::sTextures;
 std::vector<BaseLight*> GLFramework::sLights;
 //std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
@@ -14,6 +15,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 {
 	if (!glfwInit())
 	{
+		printf("Error initializing GLFW.\n");
 		return false;
 	}
 	sWindow->height = height;
@@ -25,6 +27,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	if (nullptr == sWindow->handle)
 	{
 		glfwTerminate();
+		printf("Error creating context window.\n");
 		return false;
 	}
 
@@ -34,13 +37,14 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	{
 		glfwDestroyWindow(sWindow->handle);
 		glfwTerminate();
+		printf("Error loading gl_core (ogl).\n");
 		return false;
 	}
 
 	SetClearColor(clearColor);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glEnable(GL_DEPTH_TEST);
 	
 	Keyboard::Init();
 
@@ -52,15 +56,32 @@ uint GLFramework::CreateQuad()
 	return LoadModel(BuildQuad());
 }
 
-bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
+uint GLFramework::LoadShader(std::string vertexPath, std::string fragmentPath)
 {
-	return sShader->LoadShader(vertexPath, fragmentPath);
+	Shader* s = new Shader();
+	if (!s->LoadShader(vertexPath, fragmentPath))
+	{
+		delete s;
+		return 0;
+	}
+	sShaders.push_back(s);
+	return sShaders.size() - 1;
 }
 
-void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType type, const void * value)
+void GLFramework::SetShaderUniform(const unsigned int shader, std::string varName, const Shader::UniformType type, const void* value, const uint count)
 {
-	sShader->SetUniform(name, type, value);
+	sShaders[shader]->SetUniform(varName.c_str(), type, value, count);
 }
+
+//bool GLFramework::SetShader(const char * vertexPath, const char * fragmentPath)
+//{
+//	return sShader->LoadShader(vertexPath, fragmentPath);
+//}
+
+//void GLFramework::SetShaderUniform(const char * name, const Shader::UniformType type, const void * value)
+//{
+//	sShader->SetUniform(name, type, value);
+//}
 
 uint GLFramework::LoadTexture(const char * path)
 {
@@ -91,11 +112,11 @@ uint GLFramework::LoadTexture(const char * path)
 	return sTextures.size() - 1;
 }
 
-void GLFramework::SetTexture(Texture_Unit unit, uint texture)
-{
-	glActiveTexture(unit);
-	glBindTexture(GL_TEXTURE_2D, sTextures[texture]);
-}
+//void GLFramework::SetTexture(Texture_Unit unit, uint texture)
+//{
+//	glActiveTexture(unit);
+//	glBindTexture(GL_TEXTURE_2D, sTextures[texture]);
+//}
 
 void GLFramework::SetWireframe(bool value)
 {
@@ -253,7 +274,7 @@ void GLFramework::SetLightDirection(const uint light, const vec3 newDirection)
 
 bool GLFramework::Update()
 {
-	if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	/*if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		return false;
 
 	UpdateFlyCamControls();
@@ -262,25 +283,25 @@ bool GLFramework::Update()
 	if (useWireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	sShader->SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(sCamera->GetViewProjection()));
-	
-	//update lighting
-	for each(BaseLight* light in sLights)
-	{
-		if (static_cast<DirectionalLight*>(light))
-		{
-			DirectionalLight* d = (DirectionalLight*)light;
-			SetShaderUniform("lightDirection", Shader::VEC3, &d->direction);
-			SetShaderUniform("lightColor", Shader::VEC3, &d->color);
-		}
-	}
+	}*/
+	//sShader->SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(sCamera->GetViewProjection()));
+	//
+	////update lighting
+	//for each(BaseLight* light in sLights)
+	//{
+	//	if (static_cast<DirectionalLight*>(light))
+	//	{
+	//		DirectionalLight* d = (DirectionalLight*)light;
+	//		SetShaderUniform("lightDirection", Shader::VEC3, &d->direction);
+	//		SetShaderUniform("lightColor", Shader::VEC3, &d->color);
+	//	}
+	//}
 
-	//TODO:incorporate into draw call, allow user to choose to draw or not.
-	for each (RenderObject rendObj in sRenderObjects)
-	{
-		rendObj.Draw();
-	}
+	////TODO:incorporate into draw call, allow user to choose to draw or not.
+	//for each (RenderObject rendObj in sRenderObjects)
+	//{
+	//	rendObj.Draw();
+	//}
 	
 	glfwSwapBuffers(sWindow->handle);
 	glfwPollEvents();
@@ -316,10 +337,6 @@ void GLFramework::Cleanup()
 	{
 		delete sCamera;
 	}
-	if (nullptr != sShader)
-	{
-		delete sShader;
-	}
 
 	for each(void * light in sLights)
 	{
@@ -331,6 +348,12 @@ void GLFramework::Cleanup()
 		rendObj.DeleteBuffers();
 	}
 	sRenderObjects.clear();
+
+	for (int i = 1; i < sShaders.size(); i++)
+	{
+		delete sShaders[i];
+	}
+	sShaders.clear();
 }
 
 //bool GLFramework::LoadBuffers(const Geometry & geometry)
