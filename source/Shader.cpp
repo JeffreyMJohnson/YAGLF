@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-const bool Shader::LoadShader(const char * vertexPath, const char * fragmentPath)
+const bool Shader::LoadShader(const std::string vertexPath, const std::string fragmentPath)
 {
 
 	uint vertex = LoadSubShader(GL_VERTEX_SHADER, vertexPath);
@@ -34,7 +34,7 @@ void Shader::FreeShader()
 	glDeleteProgram(mProgram);
 }
 
-void Shader::SetUniform(const char * name, const UniformType type, const void * value)
+void Shader::SetUniform(const char * name, const UniformType type, const void * value, const uint count)
 {
 	GLint location = glGetUniformLocation(mProgram, name);
 	switch (type)
@@ -57,15 +57,19 @@ void Shader::SetUniform(const char * name, const UniformType type, const void * 
 	case UINT1:
 		glUniform1ui(location, *(GLuint*)value);
 		break;
+	case TEXTURE2D:
+		glUniform1i(location, 0);
+		glActiveTexture(GL_TEXTURE0 + count);
+		glBindTexture(GL_TEXTURE_2D, *(GLuint*)value);
 	}
 }
 
-uint Shader::LoadSubShader(uint shaderType, const char * path)
+uint Shader::LoadSubShader(uint shaderType, const std::string path)
 {
 	std::ifstream stream(path);
 	std::string contents = std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
 	char* code = new char[contents.length() + 1];
-	strncpy_s(code, contents.length()+ 1, contents.c_str(), contents.length());
+	strncpy_s(code, contents.length() + 1, contents.c_str(), contents.length());
 
 	uint shader = glCreateShader(shaderType);
 

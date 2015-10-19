@@ -8,6 +8,7 @@ struct GameObject
 {
 	GLuint vao = 0;
 	uint triCount = 0;
+	GLuint diffuseTexture = 0;
 };
 
 class DeferredRenderingApp : public GameApp
@@ -46,9 +47,12 @@ private:
 	GameObject mQuad;
 
 	Window window;
-	Shader mGBufferShader;
-	Shader mCompositeShader;
-	Shader mDirectionalLightShader;
+	//Shader mGBufferShader;
+	uint mGBufferShader;
+	//Shader mCompositeShader;
+	uint mCompositeShader;
+	//Shader mDirectionalLightShader;
+	uint mDirectionalLightShader;
 	Camera camera;
 
 	std::vector<GameObject> mSceneGeometry;

@@ -3,50 +3,33 @@
 typedef unsigned int uint;
 typedef GLFramework glf;
 
+
+struct FrameBuffer
+{
+
+};
+
 bool DeferredRenderingApp::StartUp()
 {
 	//startup
-	if (!glfwInit())
+	if (!glf::Startup(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, Color(1, 0, 1, 1)))
 	{
 		return false;
 	}
-
-	window.width = WINDOW_WIDTH;
-	window.height = WINDOW_HEIGHT;
-	window.title = WINDOW_TITLE;
-
-	window.handle = glfwCreateWindow(window.width, window.height, window.title, nullptr, nullptr);
-
-	if (nullptr == window.handle)
-	{
-		glfwTerminate();
-		return false;
-	}
-
-	glfwMakeContextCurrent(window.handle);
-
-	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
-	{
-		glfwDestroyWindow(window.handle);
-		glfwTerminate();
-		return false;
-	}
-
-	window.clearColor = CLEAR_COLOR;
-	glClearColor(window.clearColor.r, window.clearColor.g, window.clearColor.b, window.clearColor.a);
-
-	Gizmos::create();
 
 	//load shaders
-	if (!mGBufferShader.LoadShader((SHADER_PATH + std::string("gbuffer_vert.glsl")).c_str(), (SHADER_PATH + std::string("gbuffer_frag.glsl")).c_str()))
+	mGBufferShader = glf::LoadShader(SHADER_PATH + std::string("gbuffer_vert.glsl"), SHADER_PATH + std::string("gbuffer_frag.glsl"));
+	if (!mGBufferShader)
 	{
 		return false;
 	}
-	if (!mCompositeShader.LoadShader((SHADER_PATH + std::string("composite_vert.glsl")).c_str(), (SHADER_PATH + std::string("composite_frag.glsl")).c_str()))
+	mCompositeShader = glf::LoadShader(SHADER_PATH + std::string("composite_vert.glsl"), SHADER_PATH + std::string("composite_frag.glsl"));
+	if (!mCompositeShader)
 	{
 		return false;
 	}
-	if (!mDirectionalLightShader.LoadShader((SHADER_PATH + std::string("directional_light_vert.glsl")).c_str(), (SHADER_PATH + std::string("directional_light_frag.glsl")).c_str()))
+	mDirectionalLightShader = glf::LoadShader(SHADER_PATH + std::string("directional_light_vert.glsl"), SHADER_PATH + std::string("directional_light_frag.glsl"));
+	if (!mDirectionalLightShader)
 	{
 		return false;
 	}
@@ -57,34 +40,56 @@ bool DeferredRenderingApp::StartUp()
 	// setup gpass framebuffer
 	glGenFramebuffers(1, &mGPassFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, mGPassFBO);
+
 	glGenTextures(1, &mAlbedoTexture);
 	glBindTexture(GL_TEXTURE_2D, mAlbedoTexture);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, 1280, 720);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mAlbedoTexture, 0);
+
 	glGenTextures(1, &mPositionTexture);
 	glBindTexture(GL_TEXTURE_2D, mPositionTexture);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, 1280, 720);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mPositionTexture, 0);
+
 	glGenTextures(1, &mNormalTexture);
 	glBindTexture(GL_TEXTURE_2D, mNormalTexture);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, 1280, 720);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mNormalTexture, 0);
+
+
 	glGenRenderbuffers(1, &mGPassDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, mGPassDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1280, 720);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mAlbedoTexture, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mPositionTexture, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mNormalTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mGPassDepth);
+	
 	GLenum gpassTargets[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, gpassTargets);
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		printf("Error setting up GPass frame buffer.\n");
+		std::string error;
+		switch (status)
+		{
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			error = "FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+			break;
+		case GL_FRAMEBUFFER_UNDEFINED:
+			error = "GL_FRAMEBUFFER_UNDEFINED";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			error = "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			error = "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+			break;
+		}
+		printf("Error setting up GPass frame buffer: %s\n", error);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -137,6 +142,32 @@ bool DeferredRenderingApp::StartUp()
 	//FBXFile file;
 	std::string path = "../resources/models/fbx/soulspear.fbx";
 	LoadModel(path);
+
+	//load model textures
+	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+	unsigned char* data = stbi_load("../resources/textures/soulspear/soulspear_diffuse.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	switch (imageFormat)
+	{
+	case 1: imageFormat = GL_RED; break;
+	case 2: imageFormat = GL_RG; break;
+	case 3: imageFormat = GL_RGB; break;
+	case 4: imageFormat = GL_RGBA; break;
+	}
+
+	if (data == nullptr)
+	{
+		std::cout << "error loading texture.\n" << stbi_failure_reason();
+	}
+
+	glGenTextures(1, &mSceneGeometry[0].diffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, mSceneGeometry[0].diffuseTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight, 0, imageFormat, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	stbi_image_free(data);
+
 	return true;
 }
 
@@ -147,29 +178,27 @@ void DeferredRenderingApp::ShutDown()
 
 bool DeferredRenderingApp::Update()
 {
-	Gizmos::clear();
-
-	if (glfwWindowShouldClose(window.handle) || glfwGetKey(window.handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glf::WindowShouldClose() || Keyboard::IsKeyPressed(Keyboard::KEY_ESCAPE))
+		//if (glfwWindowShouldClose(window.handle) || Keyboard::IsKeyPressed(Keyboard::KEY_ESCAPE))
 	{
 		return false;
 	}
+
 	// G-Pass: render out the albedo, position and normal
 	glEnable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, mGPassFBO);
-	glClearColor(0, 0, 0, 0);
+	glClearColor(.75f, .75f, .75f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(mGBufferShader.GetProgram());
+	glUseProgram(glf::GetShaderProgram(mGBufferShader));
 	// bind camera transforms
-	int loc = glGetUniformLocation(mGBufferShader.GetProgram(), "ProjectionView");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(camera.GetViewProjection()));
-	loc = glGetUniformLocation(mGBufferShader.GetProgram(), "View");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
+	glf::SetShaderUniform(mGBufferShader, "ProjectionView", Shader::MAT4, glm::value_ptr(camera.GetViewProjection()));
+	glf::SetShaderUniform(mGBufferShader, "View", Shader::MAT4, glm::value_ptr(camera.GetView()));
 
 	// draw our scene, in this example just the Stanford Bunny
 
 	for (unsigned int i = 0; i < mSceneGeometry.size(); ++i)
 	{
-		
+		glf::SetShaderUniform(mGBufferShader, "diffuse", Shader::TEXTURE2D, &mSceneGeometry[i].diffuseTexture, 0);
 		glBindVertexArray(mSceneGeometry[i].vao);
 		glDrawElements(GL_TRIANGLES, mSceneGeometry[i].triCount, GL_UNSIGNED_INT, 0);
 	}
@@ -181,15 +210,10 @@ bool DeferredRenderingApp::Update()
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
-	glUseProgram(mDirectionalLightShader.GetProgram());
-	loc = glGetUniformLocation(mDirectionalLightShader.GetProgram(), "positionTexture");
-	glUniform1i(loc, 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mPositionTexture);
-	loc = glGetUniformLocation(mDirectionalLightShader.GetProgram(), "normalTexture");
-	glUniform1i(loc, 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mNormalTexture);
+
+	glUseProgram(glf::GetShaderProgram(mDirectionalLightShader));
+	glf::SetShaderUniform(mDirectionalLightShader, "positionTexture", Shader::TEXTURE2D, &(unsigned int)mPositionTexture, 0);
+	glf::SetShaderUniform(mDirectionalLightShader, "normalTexture", Shader::TEXTURE2D, &(unsigned int)mNormalTexture, 1);
 	// draw lights as fullscreen quads
 	drawDirectionalLight(glm::vec3(-1), glm::vec3(1));
 	glDisable(GL_BLEND);
@@ -197,20 +221,15 @@ bool DeferredRenderingApp::Update()
 	// Composite Pass: render a quad and combine albedo and light
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glUseProgram(mCompositeShader.GetProgram());
-	loc = glGetUniformLocation(mCompositeShader.GetProgram(), "albedoTexture");
-	glUniform1i(loc, 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mAlbedoTexture);
-	loc = glGetUniformLocation(mCompositeShader.GetProgram(), "lightTexture");
-	glUniform1i(loc, 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mLightTexture);
+	glUseProgram(glf::GetShaderProgram(mCompositeShader));
+	glf::SetShaderUniform(mCompositeShader, "albedoTexture", Shader::TEXTURE2D, &(unsigned int)mAlbedoTexture, 0);
+	glf::SetShaderUniform(mCompositeShader, "lightTexture", Shader::TEXTURE2D, &(unsigned int)mLightTexture, 1);
 	glBindVertexArray(mQuad.vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	glfwSwapBuffers(window.handle);
-	glfwPollEvents();
+	//glfwSwapBuffers(window.handle);
+	//glfwPollEvents();
+	glf::Update();
 	return true;
 }
 
@@ -228,7 +247,7 @@ void DeferredRenderingApp::LoadModel(std::string path)
 		std::cout << "Error loading FBX file: " << path << std::endl;
 	}
 
-	for (int i = 0; i < file.getMeshCount(); i++ )
+	for (int i = 0; i < file.getMeshCount(); i++)
 	{
 		FBXMeshNode* mesh = file.getMeshByIndex(i);
 		GameObject rendObj;
@@ -272,19 +291,35 @@ void DeferredRenderingApp::LoadModel(std::string path)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		mSceneGeometry.push_back(rendObj);
-		
+
 	}
 	file.unload();
+
+	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+	unsigned char* data = stbi_load("../resources/textures/soulspear/soulspear_diffuse.tga", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+	switch (imageFormat)
+	{
+	case 1: imageFormat = GL_RED; break;
+	case 2: imageFormat = GL_RG; break;
+	case 3: imageFormat = GL_RGB; break;
+	case 4: imageFormat = GL_RGBA; break;
+	}
+
+	if (data == nullptr)
+	{
+		std::cout << "error loading texture.\n" << stbi_failure_reason();
+	}
+
 }
 
 void DeferredRenderingApp::drawDirectionalLight(const glm::vec3& direction, const glm::vec3& diffuse)
 {
 	glm::vec4 viewSpaceLight = camera.GetView() * glm::vec4(glm::normalize(direction), 0);
-	int loc = glGetUniformLocation(mDirectionalLightShader.GetProgram(), "lightDirection");
-	glUniform3fv(loc, 1, &viewSpaceLight[0]);
-	loc = glGetUniformLocation(mDirectionalLightShader.GetProgram(), "lightDiffuse");
-	glUniform3fv(loc, 1, &diffuse[0]);
+	glf::SetShaderUniform(mDirectionalLightShader, "lightDirection", Shader::VEC3, glm::value_ptr(viewSpaceLight));
+	glf::SetShaderUniform(mDirectionalLightShader, "lightDiffuse", Shader::VEC3, glm::value_ptr(diffuse));
 	glBindVertexArray(mQuad.vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
-}
+}
+

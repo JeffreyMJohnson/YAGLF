@@ -94,20 +94,21 @@ struct Window
 	Color clearColor;
 };
 
-enum Texture_Unit
-{
-	ZERO = GL_TEXTURE0,
-	ONE = GL_TEXTURE1,
-	TWO = GL_TEXTURE2,
-	THREE = GL_TEXTURE3,
-	FOUR = GL_TEXTURE4,
-	FIVE = GL_TEXTURE5,
-	SIX = GL_TEXTURE6,
-	SEVEN = GL_TEXTURE7,
-	EIGHT = GL_TEXTURE8,
-	NINE = GL_TEXTURE9,
-	TEN = GL_TEXTURE10
-};
+
+//enum Texture_Unit
+//{
+//	ZERO = GL_TEXTURE0,
+//	ONE = GL_TEXTURE1,
+//	TWO = GL_TEXTURE2,
+//	THREE = GL_TEXTURE3,
+//	FOUR = GL_TEXTURE4,
+//	FIVE = GL_TEXTURE5,
+//	SIX = GL_TEXTURE6,
+//	SEVEN = GL_TEXTURE7,
+//	EIGHT = GL_TEXTURE8,
+//	NINE = GL_TEXTURE9,
+//	TEN = GL_TEXTURE10
+//};
 
 const Color WHITE(1, 1, 1, 1);
 const Color GREY(.5f, .5f, .5f, 1);
@@ -118,17 +119,44 @@ class GLFramework
 {
 public:
 
-
+	/*
+	Initializes OpenGL and creates a window od given height and width.
+	This should be first Method called to initialize framework.
+	*/
 	static bool Startup(const int width, const int height, const char* title, const Color clearColor);
+
+	/*
+	Wrapper method for glfwwindowshouldclose() method.
+	*/
+	static bool WindowShouldClose() { return glfwWindowShouldClose(sWindow->handle); }
 	
 	static uint CreateQuad();
 
+	/*
+	Loads shader code from given path and attempts to compile and link to shader program.  
+	Returns unsigned int greater than 0 if successful, else returns 0 which means error occured, check
+	console for error logging.
+	*/
+	static uint LoadShader(std::string vertexPath, std::string fragmentPath);
 
-	static bool SetShader(const char* vertexPath, const char* fragmentPath);
-	static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
+	/*
+	Set uniform variable of given shader.
+	shader - ID returned by LoadShader
+	varName - string of uniform variable in shader to assign
+	type - Shader::UniformType enum of uniform variables type
+	value - pointer to value setting the uniform to.
+	count - Only used with setting type of texture2d, this is the texture unit to bind the texture to.
+	*/
+	static void SetShaderUniform(const unsigned int shader, std::string varName, const Shader::UniformType type, const void* value, const uint count = 0);
+
+	//DEBUG ONLY NEEDS TO BE REFACTORED OUT
+	static unsigned int GetShaderProgram(const unsigned int shader) { return sShaders[shader]->GetProgram(); }
+
+	//static bool SetShader(const char* vertexPath, const char* fragmentPath);
+	//static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
 	
 	static uint LoadTexture(const char * path);
-	static void SetTexture(Texture_Unit unit, uint texture);
+	//static void SetTexture(Texture_Unit unit, uint texture);
 
 	static void SetWireframe(bool value);
 	
@@ -158,7 +186,8 @@ public:
 private:
 	static Window* sWindow;
 	static Camera* sCamera;
-	static Shader* sShader;
+	//static Shader* sShader;
+	static std::vector<Shader*> sShaders;
 	static std::vector<uint> sTextures;
 	static std::vector<RenderObject> sRenderObjects;
 	static std::vector<BaseLight*> sLights;

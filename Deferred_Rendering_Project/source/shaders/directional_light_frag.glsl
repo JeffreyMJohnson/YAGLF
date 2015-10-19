@@ -1,6 +1,7 @@
 #version 410
 
 in vec2 vTexCoord;
+
 out vec3 LightOutput;
 
 // direction in view-space
