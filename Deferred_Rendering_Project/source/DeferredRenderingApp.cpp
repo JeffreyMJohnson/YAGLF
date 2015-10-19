@@ -46,30 +46,50 @@ bool DeferredRenderingApp::StartUp()
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, 1280, 720);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mAlbedoTexture, 0);
 
 	glGenTextures(1, &mPositionTexture);
 	glBindTexture(GL_TEXTURE_2D, mPositionTexture);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, 1280, 720);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mPositionTexture, 0);
+
 	glGenTextures(1, &mNormalTexture);
 	glBindTexture(GL_TEXTURE_2D, mNormalTexture);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, 1280, 720);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mNormalTexture, 0);
+
+
 	glGenRenderbuffers(1, &mGPassDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, mGPassDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1280, 720);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mAlbedoTexture, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mPositionTexture, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mNormalTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mGPassDepth);
+	
 	GLenum gpassTargets[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, gpassTargets);
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		printf("Error setting up GPass frame buffer.\n");
+		std::string error;
+		switch (status)
+		{
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			error = "FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+			break;
+		case GL_FRAMEBUFFER_UNDEFINED:
+			error = "GL_FRAMEBUFFER_UNDEFINED";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			error = "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			error = "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+			break;
+		}
+		printf("Error setting up GPass frame buffer: %s\n", error);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
