@@ -322,4 +322,3 @@ void DeferredRenderingApp::drawDirectionalLight(const glm::vec3& direction, cons
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 }
-

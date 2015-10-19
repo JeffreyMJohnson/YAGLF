@@ -15,7 +15,9 @@
     <None Include="source\shaders\gbuffer_vert.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="source\shaders\directional_light_vert.glsl" />
+    <None Include="source\shaders\directional_light_vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -40,7 +42,13 @@
     <Text Include="source\shaders\composite_vert.glsl">
       <Filter>Shaders</Filter>
     </Text>
-    <Text Include="source\shaders\composite_frag.glsl" />
-    <Text Include="source\shaders\directional_light_frag.glsl" />
+    <Text Include="source\shaders\composite_frag.glsl">
+      <Filter>Shaders</Filter>
+    </Text>
+    <Text Include="source\shaders\directional_light_frag.glsl">
+      <Filter>Shaders</Filter>
+    </Text>
+    <Text Include="source\shaders\point_light_vert.glsl" />
+    <Text Include="source\shaders\point_light_frag.glsl" />
   </ItemGroup>
 </Project>
