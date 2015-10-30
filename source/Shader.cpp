@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include <assert.h>
 
 const bool Shader::LoadShader(const std::string vertexPath, const std::string fragmentPath)
 {
@@ -21,7 +22,7 @@ const bool Shader::LoadShader(const std::string vertexPath, const std::string fr
 		glGetProgramiv(mProgram, GL_INFO_LOG_LENGTH, &length);
 		char* log = new char[length];
 		glGetProgramInfoLog(mProgram, length, 0, log);
-		std::cout << "Error linking shader program.\n" << log << std::endl;
+		assert(true && "Error linking shader:" && log);
 		delete[] log;
 		return false;
 	}
@@ -83,7 +84,7 @@ uint Shader::LoadSubShader(uint shaderType, const std::string path)
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 		char* log = new char[length];
 		glGetShaderInfoLog(shader, length, 0, log);
-		std::cout << "Error compiling shader.\n" << log << std::endl;
+		assert(true && "Error compiling shader." && log);
 		delete[] log;
 	}
 
