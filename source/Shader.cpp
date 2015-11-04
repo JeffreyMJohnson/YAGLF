@@ -22,7 +22,7 @@ const bool Shader::LoadShader(const std::string vertexPath, const std::string fr
 		glGetProgramiv(mProgram, GL_INFO_LOG_LENGTH, &length);
 		char* log = new char[length];
 		glGetProgramInfoLog(mProgram, length, 0, log);
-		assert(true && "Error linking shader:" && log);
+		assert(false && "Error linking shader:" && log);
 		delete[] log;
 		return false;
 	}
@@ -69,6 +69,12 @@ uint Shader::LoadSubShader(uint shaderType, const std::string path)
 {
 	std::ifstream stream(path);
 	std::string contents = std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+	if (contents.size() == 0)
+	{
+		std::cerr << "Nothing in file " << path << std::endl;
+		assert(false);
+		return 0;
+	}
 	char* code = new char[contents.length() + 1];
 	strncpy_s(code, contents.length() + 1, contents.c_str(), contents.length());
 
@@ -84,8 +90,10 @@ uint Shader::LoadSubShader(uint shaderType, const std::string path)
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 		char* log = new char[length];
 		glGetShaderInfoLog(shader, length, 0, log);
-		assert(true && "Error compiling shader." && log);
+		assert(false && "Error compiling shader." && log);
 		delete[] log;
+		glDeleteShader(shader);
+		return 0;
 	}
 
 	delete[] code;

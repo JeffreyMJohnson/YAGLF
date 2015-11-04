@@ -31,6 +31,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deferred_Rendering_Project"
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadows_Project", "Shadows_Project\Shadows_Project.vcxproj", "{05B1E15C-B35F-4CEF-9FEF-5C5B94A4B235}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D54DCF38-2FD0-466E-AA3E-C62AE22807F8} = {D54DCF38-2FD0-466E-AA3E-C62AE22807F8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
