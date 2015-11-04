@@ -59,6 +59,24 @@ struct BaseLight
 	Color color;
 };
 
+struct Texture
+{
+	/*
+	Base internal format
+	note:Add more formats here as needed in future.
+	*/
+	enum Format
+	{
+		RGB8 = GL_RGB8,
+		RGB32F = GL_RGB32F,
+		DEPTH = GL_DEPTH_COMPONENT
+	};
+	uint width = 1;
+	uint height = 1;
+	Format format;
+	uint handle = 0;
+};
+
 
 
 struct DirectionalLight : public BaseLight
@@ -94,22 +112,6 @@ struct Window
 	GLFWwindow* handle = nullptr;
 	Color clearColor;
 };
-
-
-//enum Texture_Unit
-//{
-//	ZERO = GL_TEXTURE0,
-//	ONE = GL_TEXTURE1,
-//	TWO = GL_TEXTURE2,
-//	THREE = GL_TEXTURE3,
-//	FOUR = GL_TEXTURE4,
-//	FIVE = GL_TEXTURE5,
-//	SIX = GL_TEXTURE6,
-//	SEVEN = GL_TEXTURE7,
-//	EIGHT = GL_TEXTURE8,
-//	NINE = GL_TEXTURE9,
-//	TEN = GL_TEXTURE10
-//};
 
 const Color WHITE(1, 1, 1, 1);
 const Color GREY(.5f, .5f, .5f, 1);
@@ -157,7 +159,6 @@ public:
 	//static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
 	
 	static uint LoadTexture(const char * path);
-	//static void SetTexture(Texture_Unit unit, uint texture);
 
 	static void SetWireframe(bool value);
 	

@@ -15,7 +15,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 {
 	if (!glfwInit())
 	{
-		printf("Error initializing GLFW.\n");
+		assert(false && "Error initializing GLFW.");
 		return false;
 	}
 	sWindow->height = height;
@@ -27,7 +27,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	if (nullptr == sWindow->handle)
 	{
 		glfwTerminate();
-		printf("Error creating context window.\n");
+		assert(false && "Error creating context window.");
 		return false;
 	}
 
@@ -37,14 +37,11 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	{
 		glfwDestroyWindow(sWindow->handle);
 		glfwTerminate();
-		printf("Error loading gl_core (ogl).\n");
+		assert(false && "Error loading gl_core (ogl).\n");
 		return false;
 	}
 
 	SetClearColor(clearColor);
-
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glEnable(GL_DEPTH_TEST);
 	
 	Keyboard::Init();
 
