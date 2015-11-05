@@ -8,8 +8,24 @@
 #include <iostream>
 
 typedef unsigned int uint;
+using glm::vec2;
 
+const vec4 up(0, 1, 0, 0);
+const vec4 down = -up;
+const vec4 right(1, 0, 0, 0);
+const vec4 left = -right;
+const vec4 forward(0, 0, 1, 0);
+const vec4 backward = -forward;
 
+const Vertex QuadVerts[] =
+{
+	{ vec4(-1, 1, 0, 1), vec4(0), backward,  left, vec2(0,1) },
+	{ vec4(1, 1, 0, 1), vec4(0), backward,  left, vec2(1,1) },
+	{ vec4(1,-1, 0, 1), vec4(0), backward,  left, vec2(1,0) },
+	{ vec4(-1,-1, 0, 1), vec4(0), backward,  left, vec2(0,0) },
+};
+
+const unsigned QuadTris[] = { 3,1,0, 3,2,1 };
 
 struct Vertex
 {

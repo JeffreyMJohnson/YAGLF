@@ -23,8 +23,8 @@ public:
 	const float CAMERA_FOV = glm::pi<float>() *.25f;
 	const float CAMERA_NEAR = .1f;
 	const float CAMERA_FAR = 1000.0f;
-	const vec3 CAMERA_FROM = vec3(10,10,10);
-	const vec3 CAMERA_TO = vec3(0);
+	const vec3 CAMERA_FROM = vec3(0,2,5);
+	const vec3 CAMERA_TO = vec3(0,2,0);
 	const vec3 CAMERA_UP = vec3(0, 1, 0);
 
 
@@ -60,5 +60,6 @@ private:
 	FBXFile mFBX;
 
 	void LoadModel(std::string path);
+	void LoadModel(Geometry& geometry);
 	void drawDirectionalLight(const glm::vec3& direction, const glm::vec3& diffuse);
 };

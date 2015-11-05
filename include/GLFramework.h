@@ -67,6 +67,10 @@ struct Texture
 	*/
 	enum Format
 	{
+		RED = GL_RED,
+		RG = GL_RG,
+		RGB = GL_RGB,
+		RGBA = GL_RGBA,
 		RGB8 = GL_RGB8,
 		RGB32F = GL_RGB32F,
 		DEPTH = GL_DEPTH_COMPONENT
@@ -159,6 +163,7 @@ public:
 	//static void SetShaderUniform(const char* name, const Shader::UniformType type, const void* value);
 	
 	static uint LoadTexture(const char * path);
+	static uint MakeTexture(uint width, uint height, Texture::Format format, char* pixelData);
 
 	static void SetWireframe(bool value);
 	
@@ -201,4 +206,5 @@ private:
 	//static bool LoadBuffers(const Geometry& geometry);
 	static void UpdateFlyCamControls();
 	static Geometry BuildQuad();
+	static void CheckGLError();
 };

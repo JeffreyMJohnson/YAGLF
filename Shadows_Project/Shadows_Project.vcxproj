@@ -139,8 +139,14 @@
     <ClCompile Include="source\ShadowsApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="source\shaders\Lighting_Frag_Shader.glsl" />
-    <None Include="source\shaders\Lighting_Vert_Shader.glsl" />
+    <None Include="source\shaders\composite_frag.glsl" />
+    <None Include="source\shaders\composite_vert.glsl" />
+    <None Include="source\shaders\directional_light_frag.glsl" />
+    <None Include="source\shaders\directional_light_vert.glsl" />
+    <None Include="source\shaders\gbuffer_frag.glsl" />
+    <None Include="source\shaders\gbuffer_vert.glsl" />
+    <None Include="source\shaders\point_light_frag.glsl" />
+    <None Include="source\shaders\point_light_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

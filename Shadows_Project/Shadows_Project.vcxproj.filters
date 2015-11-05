@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="source\AppMain.cpp" />
+    <ClCompile Include="source\ShadowsApp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\GameApp.h" />
+    <ClInclude Include="include\ShadowsApp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{42531e8d-dbb1-4db5-ab7d-4139c0ad3ef0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\shaders\composite_frag.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\composite_vert.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\directional_light_frag.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\directional_light_vert.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\gbuffer_frag.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\gbuffer_vert.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\point_light_frag.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="source\shaders\point_light_vert.glsl">
+      <Filter>shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

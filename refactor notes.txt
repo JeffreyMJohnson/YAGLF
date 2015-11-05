@@ -1,0 +1,19 @@
+RenderPass
+	frame buffer object
+		texture objects
+			init - width, height, format, data (can be null)
+			use - handle	
+		
+	render object
+		vertex array object
+		triangle count
+	
+
+	
+need:
+simple project template that has
+	game loop with window of given width, height, title
+	access to input (keys/mouse)
+	creation multiple render passes
+	
+	

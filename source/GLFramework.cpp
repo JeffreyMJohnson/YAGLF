@@ -84,27 +84,49 @@ uint GLFramework::LoadTexture(const char * path)
 {
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 	unsigned char* data = stbi_load(path, &imageWidth, &imageHeight, &imageFormat, STBI_default);
-
+	Texture::Format format;
 	switch (imageFormat)
 	{
-	case 1: imageFormat = GL_RED; break;
-	case 2: imageFormat = GL_RG; break;
-	case 3: imageFormat = GL_RGB; break;
-	case 4: imageFormat = GL_RGBA; break;
+	case 1: format = Texture::RED; break;
+	case 2: format = Texture::RG; break;
+	case 3: format = Texture::RGB; break;
+	case 4: format = Texture::RGBA; break;
 	}
 
 	if (data == nullptr)
 	{
 		std::cout << "error loading texture.\n" << stbi_failure_reason();
+		assert(false);
 	}
-	uint textureHandle;
+	return MakeTexture(imageWidth, imageHeight, format, (char*)data);
+}
+
+uint GLFramework::MakeTexture(uint width, uint height, Texture::Format format, char* pixelData)
+{
+	glGetError();
+	GLuint textureHandle;
 	glGenTextures(1, &textureHandle);
 	glBindTexture(GL_TEXTURE_2D, textureHandle);
-	glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight,0, imageFormat, GL_UNSIGNED_BYTE, data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (nullptr == pixelData && format != GL_DEPTH_COMPONENT)
+	{
+		GLenum status = glGetError();
+		assert(status == GL_NO_ERROR);
 
-	stbi_image_free(data);
+		glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		assert(status == GL_NO_ERROR);
+	}
+	else   // otherwise, we're creating a normal texture
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixelData);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	CheckGLError();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 	sTextures.push_back(textureHandle);
 	return sTextures.size() - 1;
 }
@@ -454,4 +476,40 @@ Geometry GLFramework::BuildQuad()
 	quad.indices.push_back(3);
 
 	return quad;
+}
+void GLFramework::CheckGLError()
+{
+	std::string error;
+	switch (glGetError())
+	{
+	case GL_NO_ERROR:
+		error = "GL_NO_ERROR";
+		break;
+	case GL_INVALID_ENUM:
+		error = "GL_INVALID_ENUM";
+		break;
+	case GL_INVALID_VALUE:
+		error = "GL_INVALID_VALUE";
+		break;
+	case GL_INVALID_OPERATION:
+		error = "GL_INVALID_OPERATION";
+		break;
+	case GL_INVALID_FRAMEBUFFER_OPERATION:
+		error = "GL_INVALID_FRAMEBUFFER_OPERATION";
+		break;
+	case GL_OUT_OF_MEMORY:
+		error = "GL_OUT_OF_MEMORY";
+		break;
+	case GL_STACK_UNDERFLOW:
+		error = "GL_STACK_UNDERFLOW";
+		break;
+	case GL_STACK_OVERFLOW:
+		error = "GL_STACK_OVERFLOW";
+		break;
+	}
+	if (error != "GL_NO_ERROR")
+	{
+		std::cerr << printf("GL error found: %s\n", error);
+		assert(false);
+	}
 }

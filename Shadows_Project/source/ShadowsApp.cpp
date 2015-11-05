@@ -161,6 +161,9 @@ bool ShadowsApp::StartUp()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(data);
 
+	//load floor
+
+
 	return true;
 }
 
@@ -187,13 +190,15 @@ bool ShadowsApp::Update()
 	glf::SetShaderUniform(mGBufferShader, "ProjectionView", Shader::MAT4, glm::value_ptr(camera.GetViewProjection()));
 	glf::SetShaderUniform(mGBufferShader, "View", Shader::MAT4, glm::value_ptr(camera.GetView()));
 
-	// draw our scene, in this example just the Stanford Bunny
+	// draw our scene
 
 	for (unsigned int i = 0; i < mSceneGeometry.size(); ++i)
 	{
 		glf::SetShaderUniform(mGBufferShader, "diffuse", Shader::TEXTURE2D, &mSceneGeometry[i].diffuseTexture, 0);
 		glBindVertexArray(mSceneGeometry[i].vao);
 		glDrawElements(GL_TRIANGLES, mSceneGeometry[i].triCount, GL_UNSIGNED_INT, 0);
+
+
 	}
 
 	// Light Pass: render lights as geometry, sampling position and
@@ -306,6 +311,8 @@ void ShadowsApp::LoadModel(std::string path)
 		std::cout << "error loading texture.\n" << stbi_failure_reason();
 	}
 }
+
+
 
 void ShadowsApp::drawDirectionalLight(const glm::vec3 & direction, const glm::vec3 & diffuse)
 {
