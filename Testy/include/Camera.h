@@ -1,7 +1,32 @@
 #pragma once
-#include <glm\glm.hpp>
-#include <glm\ext.hpp>
-#include <glm\gtx\transform.hpp>
+#include "glm\glm.hpp"
+#include "glm\ext.hpp"
+#include "glm\gtx\transform.hpp"
+
+
+/*
+struct Projection
+{
+	glm::mat4 projection;
+};
+
+struct Orthographic : public Projection
+{
+	Orthographic(const float left, const float right, const float bottom, const float top)
+	{
+		projection = glm::ortho(left, right, bottom, top);
+	}
+};
+
+struct Perspective : public Projection
+{
+	Perspective(const float fov, const float aspectRatio, const float a_near, const float a_far)
+	{
+		projection = glm::perspective(fov, aspectRatio, a_near, a_far);
+	}
+};
+*/
+
 
 class Camera
 {
@@ -10,9 +35,9 @@ public:
 	void Slide(const float hDistance, const float vDistance);
 	void Move(const float distance);
 
-	bool StartupPerspective(const float fov, const float aspectRatio, const float a_near, const float a_far);
-	bool StartupOrthographic(const float left, const float right, const float bottom, const float top);
-	
+	bool SetPerspectiveProjection(const float fov, const float aspectRatio, const float a_near, const float a_far);
+	bool SetOrthographicProjection(const float left, const float right, const float bottom, const float top);
+
 	void Update(const float deltaTime);
 
 	bool SetView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
@@ -40,4 +65,6 @@ protected:
 	void UpdateView();
 	bool SetView(const float left, const float right, const float bottom, const float top);
 	
+private:
+	void UpdateFlyCamControls();
 };

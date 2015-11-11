@@ -1,15 +1,32 @@
 #pragma once
 #include "GameApp.h"
+#include "Camera.h"
+
+
+
+struct GameObject
+{
+	glm::mat4 transform;
+	uint geometry = 0;
+};
 
 class TestyApp : public GameApp
 {
+	uint mShaderProgram = 0;
+	Geometry mTriangle;
+	GameObject mGameObj;
+	Camera mMainCamera;
+
+	void UpdateFlyCamControls();
+	
+
 public:
 	const int WINDOW_WIDTH = 1280;
 	const int WINDOW_HEIGHT = 720;
 	const char* WINDOW_TITLE = "Textures App";
-	const char* VERTEX_SHADER_PATH = "Vert.glsl";
-	const char* FRAGMENT_SHADER_PATH = "Frag.glsl";
-	const Color CLEAR_COLOR = Color(.25f, .25f, .25f, 1);
+	const char* VERTEX_SHADER_PATH = "./source/shaders/vertex.glsl";
+	const char* FRAGMENT_SHADER_PATH = "./source/shaders/fragment.glsl";
+	const vec4 CLEAR_COLOR = vec4(.25f, .25f, 0, 1);
 	const float CAMERA_FOV = glm::pi<float>() * .25f;
 	const float CAMERA_NEAR = .1f;
 	const float CAMERA_FAR = 1000.0f;

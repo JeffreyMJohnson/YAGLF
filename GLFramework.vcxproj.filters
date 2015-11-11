@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\camera">
-      <UniqueIdentifier>{bfcf3a6b-6063-47be-be20-92a40a0635df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\camera">
-      <UniqueIdentifier>{317c6177-38e6-48a9-a7b4-75bf4eba6c19}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\gl_core">
       <UniqueIdentifier>{9224f399-611f-4871-a136-e723db957078}</UniqueIdentifier>
     </Filter>
@@ -39,13 +33,7 @@
     <ClInclude Include="include\GLFramework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\camera\Camera.h">
-      <Filter>Header Files\camera</Filter>
-    </ClInclude>
     <ClInclude Include="include\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RenderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Plane.h">
@@ -66,13 +54,13 @@
     <ClInclude Include="include\aie\Gizmos.h">
       <Filter>Header Files\aie</Filter>
     </ClInclude>
+    <ClInclude Include="include\Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GLFramework.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\camera\Camera.cpp">
-      <Filter>Source Files\camera</Filter>
     </ClCompile>
     <ClCompile Include="source\gl_core\gl_core_4_4.c">
       <Filter>Source Files\gl_core</Filter>
@@ -84,9 +72,6 @@
       <Filter>Source Files\input</Filter>
     </ClCompile>
     <ClCompile Include="source\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\RenderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc">

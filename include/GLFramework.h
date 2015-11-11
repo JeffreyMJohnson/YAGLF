@@ -4,9 +4,8 @@
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
 #include "glm\vec4.hpp"
-#include "camera\Camera.h"
 #include "Shader.h"
-#include "RenderObject.h"
+#include "Geometry.h"
 #include "input\Keyboard.h"
 #include "tiny_obj_loader\tiny_obj_loader.h"
 #include "fbx_loader\FBXFile.h"
@@ -25,39 +24,25 @@
 
 */
 
+/*
+RenderObject
+	vao
+	ibo
+	tricount
+
+
+*/
+
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
 
-
-
-struct Color
+struct RenderObject
 {
-	float r = 0, g = 0, b = 0, a = 0;
-	Color() {};
-	Color(float r, float g, float b, float a)
-	{
-		this->r = r;
-		this->g = g;
-		this->b = b;
-		this->a = a;
-	}
-	vec4 GetVector4()
-	{
-		return vec4(r, g, b, a);
-	}
+	uint vao = 0, vbo = 0, ibo = 0, indexCount = 0;
 };
 
-struct Material
-{
-	vec4 ambient, diffuse, specular;
-	float specularPower;
-};
 
-struct BaseLight
-{
-	Color color;
-};
 
 struct Texture
 {
@@ -77,31 +62,20 @@ struct Texture
 	uint handle = 0;
 };
 
-
-
-struct DirectionalLight : public BaseLight
+class Timer
 {
-	vec3 direction;
-	DirectionalLight(vec3 a_direction, Color a_color)
-	{
-		direction = a_direction;
-		color = a_color;
-	}
-};
+	float mTotalTime = 0;
+	float mDeltaTime = 0;
 
-struct PointLight
-{
-	Color ambient, diffuse, specular;
-	vec3 position;
-	float falloff;
-	PointLight(const Color ambient, const Color diffuse, const Color specular, const glm::vec3 position, float falloff)
+public:
+	void Update()
 	{
-		this->ambient = ambient;
-		this->diffuse = diffuse;
-		this->specular = specular;
-		this->position = position;
-		this->falloff = falloff;
+		float temp = mTotalTime;
+		mTotalTime = glfwGetTime();
+		mDeltaTime = mTotalTime - temp;
 	}
+	float GetTotalTime() { return mTotalTime; }
+	float GetDeltaTime() { return mDeltaTime; }
 };
 
 struct Window
@@ -110,23 +84,30 @@ struct Window
 	int width = 0;
 	const char* title;
 	GLFWwindow* handle = nullptr;
-	Color clearColor;
+	vec4 clearColor;
 };
 
-const Color WHITE(1, 1, 1, 1);
-const Color GREY(.5f, .5f, .5f, 1);
-const Color RED(1, 0, 0, 1);
-const Color GREEN(0, 1, 0, 1);
+const vec4 WHITE(1, 1, 1, 1);
+const vec4 GREY(.5f, .5f, .5f, 1);
+const vec4 RED(1, 0, 0, 1);
+const vec4 GREEN(0, 1, 0, 1);
 
 class GLFramework
 {
 public:
+	/*
+	ID for preset models
+	*/
+	enum GeometryModel
+	{
+		CUBE = 0
+	};
 
 	/*
 	Initializes OpenGL and creates a window od given height and width.
 	This should be first Method called to initialize framework.
 	*/
-	static bool Startup(const int width, const int height, const char* title, const Color clearColor);
+	static bool Startup(const int width, const int height, const char* title, const vec4 clearColor);
 
 	/*
 	Wrapper method for glfwwindowshouldclose() method.
@@ -141,6 +122,11 @@ public:
 	console for error logging.
 	*/
 	static uint LoadShader(std::string vertexPath, std::string fragmentPath);
+
+	/*
+	Sets current bound shader program to given.
+	*/
+	static void UseShader(uint shader);
 
 	/*
 	Set uniform variable of given shader.
@@ -162,43 +148,43 @@ public:
 
 	static void SetWireframe(bool value);
 	
-	static bool SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up);
-	static bool SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far);
-	static vec3 GetCameraPosition() { return sCamera->GetPosition(); }
-	static void SlideCamera(const float hDistance, const float vDistance);
-	static void MoveCamera(const float distance);
-
 	static uint LoadModel(const char* path);
 	static uint LoadModel(Geometry& geometry);
 
-	static uint SetDirectionalLight(const Color color, const vec3 direction);
-	static void SetLightDirection(const uint light, const vec3 newDirection);
-	//static uint CreateLight(const vec3 position, const Color ambientColor, const Color diffuseColor, const Color specularColor);
-	//static Light& GetLight(const uint light) { return sLights[light]; }
 
-	static float GetTime() { return glfwGetTime(); }
-	
+	/*
+	draw geometry, wraps glDrawElements
+	*/
+	static void DrawModel(uint modelID);
+
+	static float GetDeltaTime() { return sTimer.GetDeltaTime(); }
+	static float GetTotalTime() { return sTimer.GetTotalTime(); }
+
 	static bool Update();
-	static Color GetClearColor();
-	static void SetClearColor(const Color color);
+	static vec4 GetClearColor();
+	static void SetClearColor(const vec4 color);
 	static void Cleanup();
 
 	static int counter;
 
 private:
+
 	static Window* sWindow;
-	static Camera* sCamera;
 	//static Shader* sShader;
 	static std::vector<Shader*> sShaders;
 	static std::vector<uint> sTextures;
 	static std::vector<RenderObject> sRenderObjects;
-	static std::vector<BaseLight*> sLights;
-	static std::vector<Material> sMaterials;
 	static bool useWireframe;
-	
+	static Timer sTimer;
 
 	static uint LoadObject();
 	//static bool LoadBuffers(const Geometry& geometry);
-	static void UpdateFlyCamControls();
+	//static void UpdateFlyCamControls();
 	static Geometry BuildQuad();
+
+	static uint MakeVAO(Geometry& geometry);
+	static void DrawVAO(uint renderObject);
+	static void KillVAO(uint renderObject);
+
+
 };

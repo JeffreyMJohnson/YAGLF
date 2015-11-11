@@ -2,16 +2,14 @@
 
 Window* GLFramework::sWindow = new Window();
 int GLFramework::counter = 0;
-Camera* GLFramework::sCamera = new Camera();
-//Shader* GLFramework::sShader = new Shader();
 std::vector<Shader*> GLFramework::sShaders { nullptr };
 std::vector<uint> GLFramework::sTextures;
-std::vector<BaseLight*> GLFramework::sLights;
 //std::vector<RenderObject*> GLFramework::sRenderObjects = std::vector<RenderObject*>();
 std::vector<RenderObject> GLFramework::sRenderObjects;
 bool GLFramework::useWireframe = false;
+Timer GLFramework::sTimer;
 
-bool GLFramework::Startup(const int width, const int height, const char * title, const Color clearColor)
+bool GLFramework::Startup(const int width, const int height, const char * title, const vec4 clearColor)
 {
 	if (!glfwInit())
 	{
@@ -42,8 +40,13 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	}
 
 	SetClearColor(clearColor);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	
 	Keyboard::Init();
+
+	//load the premade models
+	//note the order of this must be same as Model enum order...
+	LoadModel(BuildCube());
 
 	return true;
 }
@@ -62,7 +65,14 @@ uint GLFramework::LoadShader(std::string vertexPath, std::string fragmentPath)
 		return 0;
 	}
 	sShaders.push_back(s);
+	glUseProgram(s->GetProgram());
 	return sShaders.size() - 1;
+
+}
+
+void GLFramework::UseShader(uint shader)
+{
+	glUseProgram(sShaders[shader]->GetProgram());
 }
 
 void GLFramework::SetShaderUniform(const unsigned int shader, std::string varName, const Shader::UniformType type, const void* value, const uint count)
@@ -117,28 +127,36 @@ uint GLFramework::LoadTexture(const char * path)
 
 void GLFramework::SetWireframe(bool value)
 {
-	useWireframe = value;
+	if (value)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	
 }
 
-bool GLFramework::SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
-{
-	return sCamera->SetView(position, target, up);
-}
-
-bool GLFramework::SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far)
-{
-	return sCamera->StartupPerspective(fov, aspectRatio, a_near, a_far);
-}
-
-void GLFramework::SlideCamera(const float hDistance, const float vDistance)
-{
-	sCamera->Slide(hDistance, vDistance);
-}
-
-void GLFramework::MoveCamera(const float distance)
-{
-	sCamera->Move(distance);
-}
+//bool GLFramework::SetCameraView(const glm::vec3 position, const glm::vec3 target, const glm::vec3 up)
+//{
+//	return sCamera->SetView(position, target, up);
+//}
+//
+//bool GLFramework::SetCameraProjection(const float fov, const float aspectRatio, const float a_near, const float a_far)
+//{
+//	return sCamera->SetPerspectiveProjection(fov, aspectRatio, a_near, a_far);
+//}
+//
+//void GLFramework::SlideCamera(const float hDistance, const float vDistance)
+//{
+//	sCamera->Slide(hDistance, vDistance);
+//}
+//
+//void GLFramework::MoveCamera(const float distance)
+//{
+//	sCamera->Move(distance);
+//}
 
 uint GLFramework::LoadModel(const char * path)
 {
@@ -220,7 +238,6 @@ uint GLFramework::LoadModel(const char * path)
 			{
 				auto xVert = mesh->m_vertices[i];
 				geometry.vertices[i].position = xVert.position;
-				geometry.vertices[i].color = xVert.colour;
 				geometry.vertices[i].normal = xVert.normal;
 				geometry.vertices[i].UV = xVert.texCoord1;
 			}
@@ -246,68 +263,26 @@ uint GLFramework::LoadModel(const char * path)
 
 uint GLFramework::LoadModel(Geometry& geometry)
 {
-	RenderObject rendObj;
-	rendObj.LoadBuffers(geometry);
-	sRenderObjects.push_back(rendObj);
-	return sRenderObjects.size() - 1;
+	return MakeVAO(geometry);
 }
 
-uint GLFramework::SetDirectionalLight(const Color color, const vec3 direction)
+void GLFramework::DrawModel(uint modelID)
 {
-	DirectionalLight* light = new DirectionalLight(direction, color);
-	sLights.push_back(light);
-	return sLights.size() - 1;
-}
-
-void GLFramework::SetLightDirection(const uint light, const vec3 newDirection)
-{
-	DirectionalLight* d = static_cast<DirectionalLight*>(sLights[light]);
-	if (d)
-	{
-		d->direction = newDirection;
-	}
-
+	DrawVAO(modelID);
 }
 
 bool GLFramework::Update()
 {
-	/*if (glfwWindowShouldClose(sWindow->handle) || glfwGetKey(sWindow->handle, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		return false;
-
-	UpdateFlyCamControls();
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (useWireframe)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}*/
-	//sShader->SetUniform("ProjectionView", Shader::MAT4, glm::value_ptr(sCamera->GetViewProjection()));
-	//
-	////update lighting
-	//for each(BaseLight* light in sLights)
-	//{
-	//	if (static_cast<DirectionalLight*>(light))
-	//	{
-	//		DirectionalLight* d = (DirectionalLight*)light;
-	//		SetShaderUniform("lightDirection", Shader::VEC3, &d->direction);
-	//		SetShaderUniform("lightColor", Shader::VEC3, &d->color);
-	//	}
-	//}
-
-	////TODO:incorporate into draw call, allow user to choose to draw or not.
-	//for each (RenderObject rendObj in sRenderObjects)
-	//{
-	//	rendObj.Draw();
-	//}
-	
+	sTimer.Update();
 	glfwSwapBuffers(sWindow->handle);
 	glfwPollEvents();
+	glClear(GL_COLOR_BUFFER_BIT);
 	return true;
 }
 
-Color GLFramework::GetClearColor()
+vec4 GLFramework::GetClearColor()
 {
-	Color result;
+	vec4 result;
 	if (nullptr != sWindow)
 	{
 		result = sWindow->clearColor;
@@ -315,7 +290,7 @@ Color GLFramework::GetClearColor()
 	return result;
 }
 
-void GLFramework::SetClearColor(const Color color)
+void GLFramework::SetClearColor(const vec4 color)
 {
 	if (nullptr != sWindow)
 	{
@@ -330,20 +305,7 @@ void GLFramework::Cleanup()
 	{
 		delete sWindow;
 	}
-	if (nullptr != sCamera)
-	{
-		delete sCamera;
-	}
 
-	for each(void * light in sLights)
-	{
-		delete light;
-	}
-	sLights.clear();
-	for each (RenderObject rendObj in sRenderObjects)
-	{
-		rendObj.DeleteBuffers();
-	}
 	sRenderObjects.clear();
 
 	for (int i = 1; i < sShaders.size(); i++)
@@ -390,33 +352,33 @@ void GLFramework::Cleanup()
 //	return sRenderObjects.size()-1;
 //}
 
-void GLFramework::UpdateFlyCamControls()
-{
-	if (Keyboard::IsKeyPressed(Keyboard::KEY_W) || Keyboard::IsKeyRepeat(Keyboard::KEY_W))
-	{
-		MoveCamera(1);
-	}
-	if (Keyboard::IsKeyPressed(Keyboard::KEY_X) || Keyboard::IsKeyRepeat(Keyboard::KEY_X))
-	{
-		MoveCamera(-1);
-	}
-	if (Keyboard::IsKeyPressed(Keyboard::KEY_A) || Keyboard::IsKeyRepeat(Keyboard::KEY_A))
-	{
-		SlideCamera(-1, 0);
-	}
-	if (Keyboard::IsKeyPressed(Keyboard::KEY_D) || Keyboard::IsKeyRepeat(Keyboard::KEY_D))
-	{
-		SlideCamera(1, 0);
-	}
-	if (Keyboard::IsKeyPressed(Keyboard::KEY_E) || Keyboard::IsKeyRepeat(Keyboard::KEY_E))
-	{
-		SlideCamera(0, 1);
-	}
-	if (Keyboard::IsKeyPressed(Keyboard::KEY_C) || Keyboard::IsKeyRepeat(Keyboard::KEY_C))
-	{
-		SlideCamera(0,-1);
-	}
-}
+//void GLFramework::UpdateFlyCamControls()
+//{
+//	if (Keyboard::IsKeyPressed(Keyboard::KEY_W) || Keyboard::IsKeyRepeat(Keyboard::KEY_W))
+//	{
+//		MoveCamera(1);
+//	}
+//	if (Keyboard::IsKeyPressed(Keyboard::KEY_X) || Keyboard::IsKeyRepeat(Keyboard::KEY_X))
+//	{
+//		MoveCamera(-1);
+//	}
+//	if (Keyboard::IsKeyPressed(Keyboard::KEY_A) || Keyboard::IsKeyRepeat(Keyboard::KEY_A))
+//	{
+//		SlideCamera(-1, 0);
+//	}
+//	if (Keyboard::IsKeyPressed(Keyboard::KEY_D) || Keyboard::IsKeyRepeat(Keyboard::KEY_D))
+//	{
+//		SlideCamera(1, 0);
+//	}
+//	if (Keyboard::IsKeyPressed(Keyboard::KEY_E) || Keyboard::IsKeyRepeat(Keyboard::KEY_E))
+//	{
+//		SlideCamera(0, 1);
+//	}
+//	if (Keyboard::IsKeyPressed(Keyboard::KEY_C) || Keyboard::IsKeyRepeat(Keyboard::KEY_C))
+//	{
+//		SlideCamera(0,-1);
+//	}
+//}
 
 Geometry GLFramework::BuildQuad()
 {
@@ -454,4 +416,68 @@ Geometry GLFramework::BuildQuad()
 	quad.indices.push_back(3);
 
 	return quad;
+}
+
+/*
+Creates and fills vbo and ibo buffers with given geometry data. returns the index of render object in list.
+*/
+uint GLFramework::MakeVAO(Geometry & geometry)
+{
+	//create new render object to hold handles
+	RenderObject rendObj;
+	rendObj.indexCount = geometry.indices.size();
+	//create and bind vertex array
+	glGenVertexArrays(1, &rendObj.vao);
+	glBindVertexArray(rendObj.vao);
+
+	//create and fill vertex buffer
+	glGenBuffers(1, &rendObj.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, rendObj.vbo);
+	glBufferData(GL_ARRAY_BUFFER, geometry.vertices.size() * sizeof(Vertex), geometry.vertices.data(), GL_STATIC_DRAW);
+
+	//create and fill index buffer
+	glGenBuffers(1, &rendObj.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendObj.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry.indices.size() * sizeof(uint), geometry.indices.data(), GL_STATIC_DRAW);
+
+	//set vertex attributes
+	glEnableVertexAttribArray(0);//position
+	glEnableVertexAttribArray(1);//normal
+	glEnableVertexAttribArray(2);//tangent
+	glEnableVertexAttribArray(3);//UV coord
+
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 1));
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 2));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3));
+
+	//cleanup
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	//add the new render object to list and return the index.
+	sRenderObjects.push_back(rendObj);
+	return sRenderObjects.size() - 1;
+}
+
+/*
+Calls GL draw call with given renderObject
+*/
+void GLFramework::DrawVAO(uint renderObject)
+{
+	
+	glBindVertexArray(sRenderObjects[renderObject].vao);
+	glDrawElements(GL_TRIANGLES, sRenderObjects[renderObject].indexCount, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+/*
+Cleans up the created GL buffrers in given render object
+*/
+void GLFramework::KillVAO(uint renderObject)
+{
+	glDeleteBuffers(1, &(sRenderObjects[renderObject].vbo));
+	glDeleteBuffers(1, &sRenderObjects[renderObject].ibo);
+	glDeleteVertexArrays(1, &sRenderObjects[renderObject].vao);
 }
