@@ -1,4 +1,4 @@
-#include "camera\Camera.h"
+#include "Camera.h"
 
 void Camera::Slide(const float hDistance, const float vDistance)
 {
@@ -15,7 +15,7 @@ void Camera::Move(const float distance)
 	UpdateView();
 }
 
-bool Camera::StartupPerspective(const float fov, const float aspectRatio, const float near, const float far)
+bool Camera::SetPerspectiveProjection(const float fov, const float aspectRatio, const float near, const float far)
 {
 	mProjectionTransform = glm::perspective(fov, aspectRatio, near, far);
 	UpdateProjectViewTransform();

@@ -18,7 +18,7 @@ public:
 	const int WINDOW_HEIGHT = 720;
 	const char* WINDOW_TITLE = "Deferred Rendering App";
 	const std::string SHADER_PATH = "../Deferred_Rendering_Project/source/shaders/";
-	const Color CLEAR_COLOR = Color(.25f, .25f, .25f, 1);
+	const vec4 CLEAR_COLOR = vec4(.25f, .25f, .25f, 1);
 	const float CAMERA_FOV = glm::pi<float>() * .25f;
 	const float CAMERA_NEAR = .1f;
 	const float CAMERA_FAR = 1000.0f;
