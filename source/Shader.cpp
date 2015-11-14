@@ -90,9 +90,12 @@ uint Shader::LoadSubShader(uint shaderType, const std::string path)
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 		char* log = new char[length];
 		glGetShaderInfoLog(shader, length, 0, log);
-		assert(false && "Error compiling shader." && log);
+		std::cerr << log << std::endl;
 		delete[] log;
 		glDeleteShader(shader);
+
+
+		assert(false && "Error compiling shader.");
 		return 0;
 	}
 

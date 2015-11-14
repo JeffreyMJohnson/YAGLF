@@ -19,19 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D54DCF38-2FD0-466E-AA3E-C62AE22807F8}</ProjectGuid>
-    <RootNamespace>GLFramework</RootNamespace>
+    <ProjectGuid>{56BCB4CD-FF85-4D2E-99EC-41C89B064E7B}</ProjectGuid>
+    <RootNamespace>Particles_Project</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,13 +69,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)libs\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\;$(ProjectDir)include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Configuration);$(ProjectDir)libs\;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)source\;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)libs\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\;$(ProjectDir)include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Configuration);$(ProjectDir)libs\;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)source\;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -87,13 +87,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>GLFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;FBXLoader_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -118,13 +113,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>GLFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;FBXLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -141,26 +131,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\aie\Gizmos.h" />
-    <ClInclude Include="include\Camera.h" />
-    <ClInclude Include="include\Geometry.h" />
-    <ClInclude Include="include\GLFramework.h" />
-    <ClInclude Include="include\input\Keyboard.h" />
-    <ClInclude Include="include\input\Mouse.h" />
-    <ClInclude Include="include\Plane.h" />
-    <ClInclude Include="include\Shader.h" />
-    <ClInclude Include="include\tiny_obj_loader\tiny_obj_loader.h" />
-    <ClInclude Include="lights\include\Light.h" />
+    <ClCompile Include="source\Keyboard.cpp" />
+    <ClCompile Include="source\ParticleEmitter.cpp" />
+    <ClCompile Include="source\ParticlesApp.cpp" />
+    <ClCompile Include="source\AppMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\aie\Gizmos.cpp" />
-    <ClCompile Include="include\tiny_obj_loader\tiny_obj_loader.cc" />
-    <ClCompile Include="source\Camera.cpp" />
-    <ClCompile Include="source\GLFramework.cpp" />
-    <ClCompile Include="source\gl_core\gl_core_4_4.c" />
-    <ClCompile Include="source\input\Keyboard.cpp" />
-    <ClCompile Include="source\input\Mouse.cpp" />
-    <ClCompile Include="source\Shader.cpp" />
+    <ClInclude Include="include\GameApp.h" />
+    <ClInclude Include="include\Keyboard.h" />
+    <ClInclude Include="include\Particle.h" />
+    <ClInclude Include="include\ParticleEmitter.h" />
+    <ClInclude Include="include\ParticlesApp.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\shaders\fragment.glsl" />
+    <None Include="source\shaders\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
