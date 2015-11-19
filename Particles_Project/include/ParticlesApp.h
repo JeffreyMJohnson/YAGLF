@@ -1,6 +1,7 @@
 #pragma once
 #include "GameApp.h"
 #include "Camera.h"
+#include "ParticleEmitter.h"
 
 
 
@@ -16,6 +17,7 @@ class ParticlesApp : public GameApp
 	Geometry mTriangle;
 	GameObject mGameObj;
 	Camera mMainCamera;
+	ParticleEmitter* mEmitter;
 
 	void UpdateFlyCamControls();
 	
@@ -26,7 +28,7 @@ public:
 	const char* WINDOW_TITLE = "Textures App";
 	const char* VERTEX_SHADER_PATH = "./source/shaders/vertex.glsl";
 	const char* FRAGMENT_SHADER_PATH = "./source/shaders/fragment.glsl";
-	const vec4 CLEAR_COLOR = vec4(.25f, .25f, 0, 1);
+	const vec4 CLEAR_COLOR = vec4(.75f, .75f, .75f, 1);
 	const float CAMERA_FOV = glm::pi<float>() * .25f;
 	const float CAMERA_NEAR = .1f;
 	const float CAMERA_FAR = 1000.0f;

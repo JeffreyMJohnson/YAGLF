@@ -13,6 +13,9 @@ bool ParticlesApp::StartUp()
 	mMainCamera.SetPerspectiveProjection(CAMERA_FOV, WINDOW_WIDTH / (float)WINDOW_HEIGHT, CAMERA_NEAR, CAMERA_FAR);
 	mMainCamera.SetView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
 
+	mEmitter = new ParticleEmitter();
+	mEmitter->Init(1000, 500, .1f, 1.0f, 1, 5, 1, .1f, glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+
 	
 	return true;
 }
@@ -25,8 +28,8 @@ void ParticlesApp::ShutDown()
 bool ParticlesApp::Update()
 {
 	UpdateFlyCamControls();
-	glf::UseShader(mShaderProgram);
 	
+	mEmitter->Update(glf::GetDeltaTime(), mMainCamera.GetWorldTransform());
 	
 	return glf::Update() && !(glf::WindowShouldClose());
 	
@@ -34,7 +37,10 @@ bool ParticlesApp::Update()
 
 void ParticlesApp::Draw()
 {
-
+	glf::UseShader(mShaderProgram);
+	glf::SetShaderUniform(mShaderProgram, "View", Shader::MAT4, glm::value_ptr(mMainCamera.GetView()));
+	glf::SetShaderUniform(mShaderProgram, "Projection", Shader::MAT4, glm::value_ptr(mMainCamera.GetProjection()));
+	mEmitter->Draw();
 }
 
 void ParticlesApp::UpdateFlyCamControls()

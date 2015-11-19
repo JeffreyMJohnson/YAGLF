@@ -27,7 +27,7 @@ public:
 	ParticleEmitter();
 	virtual ~ParticleEmitter();
 
-protected:
+//protected:
 	Particle* mParticles;
 	unsigned int mFirstDead;
 	unsigned int mMaxParticles;
@@ -40,6 +40,13 @@ protected:
 		float a_velocityMin, float a_velocityMax,
 		float a_startSize, float a_endSize,
 		const glm::vec4& a_stratColor, const glm::vec4 a_endColor);
+
+	void Emit();
+
+	void Update(float deltaTime, const glm::mat4& cameraTransform);
+
+	void Draw();
+
 
 	glm::vec3 mPosition;
 
