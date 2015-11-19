@@ -14,9 +14,15 @@ bool ParticlesApp::StartUp()
 	mMainCamera.SetView(CAMERA_FROM, CAMERA_TO, CAMERA_UP);
 
 	mEmitter = new ParticleEmitter();
-	mEmitter->Init(1000, 500, .1f, 1.0f, 1, 5, 1, .1f, glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+	mEmitter->Init(
+		1000, //max particles
+		100, //emit rate
+		.1f, 2.0f, //min-max life time
+		.1, 5, //min-max velocity
+		1, .1f, //start-end size
+		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1)); // start-endcolor
 
-	
+
 	return true;
 }
 
@@ -28,11 +34,11 @@ void ParticlesApp::ShutDown()
 bool ParticlesApp::Update()
 {
 	UpdateFlyCamControls();
-	
+
 	mEmitter->Update(glf::GetDeltaTime(), mMainCamera.GetWorldTransform());
-	
+
 	return glf::Update() && !(glf::WindowShouldClose());
-	
+
 }
 
 void ParticlesApp::Draw()

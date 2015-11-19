@@ -55,18 +55,13 @@ void ParticleEmitter::Init(unsigned int a_maxParticles, unsigned int a_emitRate,
 	glGenBuffers(1, &mVBO);
 	glGenBuffers(1, &mIBO);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, mMaxParticles * 4 *
-		sizeof(ParticleVertex), mVertexData,
-		GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, mMaxParticles * 4 * sizeof(ParticleVertex), mVertexData,	GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mMaxParticles * 6 *
-		sizeof(unsigned int), indexData, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mMaxParticles * 6 * sizeof(unsigned int), indexData, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0); // position
 	glEnableVertexAttribArray(1); // colour
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
-		sizeof(ParticleVertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
-		sizeof(ParticleVertex), ((char*)0) + 16);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,	sizeof(ParticleVertex), 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,	sizeof(ParticleVertex), (void*)(sizeof(glm::vec4)));
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -84,19 +79,16 @@ void ParticleEmitter::Emit()
 	particle.position = mPosition;
 	// randomise its lifeSpan
 	particle.lifeTime = 0;
-	particle.lifeSpan = (rand() / (float)RAND_MAX) *
-		(mLifeSpanMax - mLifeSpanMin) + mLifeSpanMin;
+	particle.lifeSpan = (rand() / (float)RAND_MAX) * (mLifeSpanMax - mLifeSpanMin) + mLifeSpanMin;
 	// set starting size and colour
 	particle.color = mStartColor;
 	particle.size = mStartSize;
 	// randomise velocity direction and strength
-	float velocity = (rand() / (float)RAND_MAX) *
-		(mVelocityMax - mVelocityMin) + mVelocityMin;
+	float velocity = (rand() / (float)RAND_MAX) * (mVelocityMax - mVelocityMin) + mVelocityMin;
 	particle.velocity.x = (rand() / (float)RAND_MAX) * 2 - 1;
 	particle.velocity.y = (rand() / (float)RAND_MAX) * 2 - 1;
 	particle.velocity.z = (rand() / (float)RAND_MAX) * 2 - 1;
-	particle.velocity = glm::normalize(particle.velocity) *
-		velocity;
+	particle.velocity = glm::normalize(particle.velocity) *	velocity;
 }
 
 void ParticleEmitter::Update(float deltaTime, const glm::mat4 & cameraTransform)
