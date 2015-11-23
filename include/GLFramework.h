@@ -1,9 +1,11 @@
 #pragma once
+#define GLM_SWIZZLE
 #include "gl_core_4_4\gl_core_4_4.h"
 #include "GLFW\glfw3.h"
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
-#include "glm\vec4.hpp"
+#include "glm\gtc\quaternion.hpp"
+#include "glm\gtx\quaternion.hpp"
 #include "Shader.h"
 #include "Geometry.h"
 #include "input\Keyboard.h"
@@ -36,10 +38,166 @@ RenderObject
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
+using glm::quat;
+using glm::mat4;
+
+class VertexBuffer
+{
+
+public:
+	GLuint mName;
+	GLsizeiptr mSize;
+	GLbitfield mFlags;
+	//void* mData;
+	const GLenum TARGET = GL_ARRAY_BUFFER;
+
+	VertexBuffer()
+	{
+		glGenBuffers(1, &mName);
+	}
+
+	~VertexBuffer()
+	{
+		glDeleteBuffers(1, &mName);
+	}
+
+	void Allocate(GLsizeiptr size, GLbitfield flags, void* data = nullptr)
+	{
+		mSize = size;
+		mFlags = flags;
+		//mData = data;
+		glBindBuffer(TARGET, mName);
+		glBufferStorage(TARGET, mSize, data, mFlags);
+		glBindBuffer(TARGET, 0);
+	}
+
+	void UpdateData(GLintptr offset, GLsizeiptr size, const GLvoid* data)
+	{
+		glBindBuffer(TARGET, mName);
+		glBufferSubData(TARGET, offset, size, data);
+		glBindBuffer(TARGET, 0);
+	}
+};
+
+struct VertexAttribute
+{
+	GLuint mIndex;
+	GLint mSize;
+	GLenum mType;
+	GLboolean mIsNormalized;
+	GLsizei mStride;
+	GLvoid* mPointer;
+
+	VertexAttribute(GLuint index, GLint size, GLenum type, GLboolean isNormalized, GLsizei stride, GLvoid* pointer)
+	{
+		mIndex = index;
+		mSize = size;
+		mType = type;
+		mIsNormalized = isNormalized;
+		mStride = stride;
+		mPointer = pointer;
+	}
+};
+
+class VertexArray
+{
+public:
+	std::vector<VertexAttribute> mVertexAttributes;
+	GLuint mName;
+	VertexArray()
+	{
+		glGenVertexArrays(1, &mName);
+	}
+
+	~VertexArray()
+	{
+		glDeleteVertexArrays(1, &mName);
+	}
+
+	void SetAttributes(std::vector<VertexAttribute>& attributes)
+	{
+		glBindVertexArray(mName);
+
+		for each (VertexAttribute att in attributes)
+		{
+			glEnableVertexAttribArray(att.mIndex);
+			glVertexAttribPointer(att.mIndex, att.mSize, att.mType, att.mIsNormalized, att.mStride, att.mPointer);
+		}
+		glBindVertexArray(0);
+	}
+
+};
+
+class IndexBuffer
+{
+public:
+	GLuint mName;
+	GLsizeiptr mSize;
+	GLbitfield mFlags;
+	//void* mData;
+	const GLenum TARGET = GL_ELEMENT_ARRAY_BUFFER;
+
+	IndexBuffer()
+	{
+		glGenBuffers(1, &mName);
+	}
+
+	~IndexBuffer()
+	{
+		glDeleteBuffers(1, &mName);
+	}
+
+	void Allocate(GLsizeiptr size, GLbitfield flags, void* data = nullptr)
+	{
+		mSize = size;
+		mFlags = flags;
+		//mData = data;
+		glBindBuffer(TARGET, mName);
+		glBufferStorage(TARGET, mSize, data, mFlags);
+		glBindBuffer(TARGET, 0);
+	}
+
+};
 
 struct RenderObject
 {
 	uint vao = 0, vbo = 0, ibo = 0, indexCount = 0;
+};
+
+class Transform
+{
+	vec3 mPosition;
+	vec3 mScale = vec3(1);
+	quat mRotation;
+	mat4 mTransform;
+
+public:
+	Transform() {};
+
+	void Translate(vec3 position)
+	{
+		mPosition = position;
+		mTransform = glm::translate(mTransform, mPosition);
+	}
+
+	void Scale(vec3 scale)
+	{
+		mScale = scale;
+		mTransform = glm::scale(mTransform, mScale);
+	}
+
+	void Rotate(vec3 axis, float angle)
+	{
+		//left off here
+		quat q = glm::angleAxis(angle, axis);
+	}
+
+};
+
+class Model
+{
+public:
+
 };
 
 
@@ -176,6 +334,8 @@ private:
 	static std::vector<RenderObject> sRenderObjects;
 	static bool useWireframe;
 	static Timer sTimer;
+	static std::vector<VertexAttribute> sVertexAttributes;
+
 
 	static uint LoadObject();
 	//static bool LoadBuffers(const Geometry& geometry);
@@ -186,5 +346,6 @@ private:
 	static void DrawVAO(uint renderObject);
 	static void KillVAO(uint renderObject);
 
-
+	static uint MakeRenderObject(Geometry& geometry);
+	static void LoadVertexAttributes();
 };

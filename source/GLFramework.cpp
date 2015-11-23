@@ -8,6 +8,7 @@ std::vector<uint> GLFramework::sTextures;
 std::vector<RenderObject> GLFramework::sRenderObjects;
 bool GLFramework::useWireframe = false;
 Timer GLFramework::sTimer;
+std::vector<VertexAttribute> sVertexAttributes;
 
 bool GLFramework::Startup(const int width, const int height, const char * title, const vec4 clearColor)
 {
@@ -47,6 +48,8 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	//load the premade models
 	//note the order of this must be same as Model enum order...
 	LoadModel(BuildCube());
+
+	LoadVertexAttributes()
 
 	return true;
 }
@@ -466,7 +469,6 @@ Calls GL draw call with given renderObject
 */
 void GLFramework::DrawVAO(uint renderObject)
 {
-	
 	glBindVertexArray(sRenderObjects[renderObject].vao);
 	glDrawElements(GL_TRIANGLES, sRenderObjects[renderObject].indexCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -480,4 +482,16 @@ void GLFramework::KillVAO(uint renderObject)
 	glDeleteBuffers(1, &(sRenderObjects[renderObject].vbo));
 	glDeleteBuffers(1, &sRenderObjects[renderObject].ibo);
 	glDeleteVertexArrays(1, &sRenderObjects[renderObject].vao);
+}
+
+void GLFramework::LoadVertexAttributes()
+{
+	VertexAttribute v0(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	VertexAttribute v1(1, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 1));
+	VertexAttribute v2(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 2));
+	VertexAttribute v3(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3));
+	sVertexAttributes.push_back(v0);
+	sVertexAttributes.push_back(v1);
+	sVertexAttributes.push_back(v2);
+	sVertexAttributes.push_back(v3);
 }
