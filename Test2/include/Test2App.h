@@ -10,5 +10,6 @@ public:
 	bool Update();
 	void Draw();
 
-	GameObject testTri;
+	GameObject testObject;
+	Texture* texture;
 };

@@ -49,7 +49,7 @@ bool GLFramework::Startup(const int width, const int height, const char * title,
 	//note the order of this must be same as Model enum order...
 	LoadModel(BuildCube());
 
-	LoadVertexAttributes()
+	LoadVertexAttributes();
 
 	return true;
 }

@@ -88,12 +88,15 @@ static Geometry BuildTestTri()
 	vertices.resize(3);
 	Vertex v0;
 	v0.position = glm::vec4(.25f, -.25f, .5f, 1.0f);
+	v0.UV = glm::vec2(0);
 	vertices[0] = v0;
 	Vertex v1;
 	v1.position = glm::vec4(-.25f, -.25f, .5f, 1.0f);
+	v1.UV = glm::vec2(0, 1);
 	vertices[1] = v1;
 	Vertex v2;
 	v2.position = glm::vec4(.25f, .25f, .5f, 1.0f);
+	v2.UV = glm::vec2(1);
 	vertices[2] = v2;
 	std::vector<unsigned int> indices{ 0,1,2 };
 	testTri.vertices = vertices;
