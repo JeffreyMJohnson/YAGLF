@@ -11,5 +11,5 @@ public:
 	void Draw();
 
 	GameObject testObject;
-	Texture* texture;
+	int crateTexture = 0;
 };

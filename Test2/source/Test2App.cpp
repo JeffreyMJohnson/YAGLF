@@ -6,7 +6,8 @@ bool Test2App::StartUp()
 {
 	if (!dvr::Init(1024, 768, "Dryv3r Test")) return false;
 	testObject = dvr::GetCube();
-	//texture = dvr::LoadTexture("../resources/textures/crate.png");
+	crateTexture = dvr::LoadTexture("../resources/textures/crate.png");
+	testObject.diffuse = crateTexture;
 	return true;
 }
 

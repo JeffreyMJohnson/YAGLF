@@ -1,21 +1,23 @@
 #include "Dryv3r.h"
 
 Window Dryv3r::mWindow;
-GameObject Dryv3r::mCube;
-GameObject Dryv3r::mTestTri;
+std::vector<Mesh> Dryv3r::mMeshList;
+std::vector<Texture> Dryv3r::mTextureList;
 std::vector<GameObject*> Dryv3r::mObjectsToDraw;
 Shader Dryv3r::mShader;
 Camera Dryv3r::mCamera;
 Texture Dryv3r::mTexture;
 
+const int Dryv3r::MESH_ID_CUBE = 0;
+const int Dryv3r::TEXTURE_ID_DEFAULT = 0;
 
 bool Dryv3r::Init(const int width, const int height, const char * title)
 {
 	if (!glfwInit())
 	{
-//#ifdef _DEBUG
+		//#ifdef _DEBUG
 		assert(false && "Error initializing GLFW.");
-//#endif
+		//#endif
 		return false;
 	}
 	mWindow.height = height;
@@ -40,19 +42,25 @@ bool Dryv3r::Init(const int width, const int height, const char * title)
 		return false;
 	}
 
-	mCube.mesh = LoadMesh(BuildCube());
-	mTestTri.mesh = LoadMesh(BuildTestTri());
+	//init stock mesh's
+	Mesh mesh = LoadMesh(BuildCube());
+	mMeshList.push_back(mesh);
 
 	mShader.LoadShader("../Dryv3r/source/shaders/forwardVert.glsl", "../Dryv3r/source/shaders/forwardFrag.glsl");
 
 	InitCamera();
-	
+
 	mShader.SetUniform("ViewProjection", Shader::MAT4, glm::value_ptr(mCamera.GetViewProjection()));
-	mShader.SetUniform("Model", Shader::MAT4, glm::value_ptr(mCube.transform.GetTransform()));
 	
+
+
 	
-	LoadTexture("../resources/textures/crate.png");
-	mShader.SetUniform("albedoTexture", Shader::TEXTURE2D, (void*)&mTexture.name);
+	//mShader.SetUniform("albedoTexture", Shader::TEXTURE2D, (void*)&mTexture.name);
+
+	//make default texture with one white pixel
+	Texture defaultTexture = MakeTexture(1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(vec4(1,1,0,1)));
+	mTextureList.push_back(defaultTexture);
+
 	return true;
 }
 
@@ -71,11 +79,15 @@ void Dryv3r::Cleanup()
 
 void Dryv3r::Draw()
 {
+
+	//forward render mode
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for each (GameObject* object in mObjectsToDraw)
 	{
-		DrawMesh(object->mesh);
+		mShader.SetUniform("Model", Shader::MAT4, glm::value_ptr(object->transform.GetTransform()));
+		mShader.SetUniform("albedoTexture", Shader::TEXTURE2D, (void*)&mTextureList[object->diffuse]);
+		DrawMesh(mMeshList[object->mesh]);
 	}
 	mObjectsToDraw.clear();
 }
@@ -85,9 +97,17 @@ void Dryv3r::DrawGameObject(GameObject& gameObject)
 	mObjectsToDraw.push_back(&gameObject);
 }
 
-Texture* Dryv3r::LoadTexture(const char * filePath)
+GameObject Dryv3r::GetCube()
 {
-	mTexture = Texture();
+	GameObject newObject;
+	newObject.mesh = MESH_ID_CUBE;
+	//diffuse texture is default 0 and that is what we want
+	return newObject;
+}
+
+int Dryv3r::LoadTexture(const char * filePath)
+{
+	Texture texture;
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 	const char* data = (const char*)stbi_load(filePath, &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
@@ -106,10 +126,11 @@ Texture* Dryv3r::LoadTexture(const char * filePath)
 		return false;
 	}
 
-	mTexture = MakeTexture(imageWidth, imageHeight, imageFormat, GL_UNSIGNED_BYTE, data);
+	texture = MakeTexture(imageWidth, imageHeight, imageFormat, GL_UNSIGNED_BYTE, data);
 	stbi_image_free((void*)data);
+	mTextureList.push_back(texture);
 
-	return &mTexture;
+	return mTextureList.size() - 1;
 }
 
 Mesh Dryv3r::LoadMesh(Geometry& geometry)
@@ -164,10 +185,10 @@ Texture Dryv3r::MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum
 	glBindTexture(GL_TEXTURE_2D, newTexture.name);
 	newTexture.width = width;
 	newTexture.height = height;
-	glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, type, pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	return newTexture;
 }
 

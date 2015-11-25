@@ -25,6 +25,8 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
+typedef unsigned uint;
+
 struct Window
 {
 	int height = 0;
@@ -68,8 +70,8 @@ class GameObject
 {
 public:
 	Transform transform;
-	Mesh mesh;
-	Texture diffuse;
+	uint mesh = 0;
+	uint diffuse = 0;
 	
 };
 
@@ -109,30 +111,28 @@ public:
 	/*
 	returns reference to 3D cube game object
 	*/
-	static GameObject& GetCube() { return mCube; }
-	
-	/*
-	returns ref to simple 2d triangle in screenspace for early testing
-	*/
-	static GameObject& GetTestTri() { return mTestTri; }
+	static GameObject GetCube();
 
 	/*
-	Loads a texture from givin file with given name string for future reference.
+	Loads a texture from given path and returns reference.
 	*/
-	static Texture* LoadTexture(const char* filePath);
+	static int LoadTexture(const char* filePath);
+
 	//applytexture
 	//destroytexture
 
 private:
+
+	static const int MESH_ID_CUBE;
+	static const int TEXTURE_ID_DEFAULT;
 	
 	static Window mWindow;
-	static GameObject mCube;
-	static GameObject mTestTri;
+	static std::vector<Mesh> mMeshList;
+	static std::vector<Texture> mTextureList;
 	static std::vector<GameObject*> mObjectsToDraw;
 	static Shader mShader;
 	static Camera mCamera;
 	static Texture mTexture;
-	static std::map<std::string, Texture> mTextureList;
 
 	static Mesh LoadMesh(Geometry& geometry);
 	static void DrawMesh(Mesh& mesh);
