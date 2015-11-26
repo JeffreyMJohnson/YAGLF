@@ -4,12 +4,19 @@ Window Dryv3r::mWindow;
 std::vector<Mesh> Dryv3r::mMeshList;
 std::vector<Texture> Dryv3r::mTextureList;
 std::vector<GameObject*> Dryv3r::mObjectsToDraw;
-Shader Dryv3r::mShader;
+Shader Dryv3r::mForwardPassShader;
+Shader Dryv3r::mGpassShader;
+Shader Dryv3r::mCpassShader;
 Camera Dryv3r::mCamera;
-Texture Dryv3r::mTexture;
+uint  Dryv3r::albedoTexture;
+uint  Dryv3r::positionTexture;
+uint  Dryv3r::normalTexture;
+uint Dryv3r::depthTexture;
+uint Dryv3r::mGpassFrameBuffer = 0;
 
-const int Dryv3r::MESH_ID_CUBE = 0;
-const int Dryv3r::TEXTURE_ID_DEFAULT = 0;
+const uint Dryv3r::MESH_ID_CUBE = 0;
+const uint Dryv3r::MESH_ID_QUAD = 1;
+const uint Dryv3r::TEXTURE_ID_DEFAULT = 0;
 
 bool Dryv3r::Init(const int width, const int height, const char * title)
 {
@@ -43,24 +50,21 @@ bool Dryv3r::Init(const int width, const int height, const char * title)
 	}
 
 	//init stock mesh's
-	Mesh mesh = LoadMesh(BuildCube());
-	mMeshList.push_back(mesh);
-
-	mShader.LoadShader("../Dryv3r/source/shaders/forwardVert.glsl", "../Dryv3r/source/shaders/forwardFrag.glsl");
+	LoadMesh(BuildCube());
+	LoadMesh(BuildQuad());
 
 	InitCamera();
 
-	mShader.SetUniform("ViewProjection", Shader::MAT4, glm::value_ptr(mCamera.GetViewProjection()));
-	
-
-
-	
-	//mShader.SetUniform("albedoTexture", Shader::TEXTURE2D, (void*)&mTexture.name);
-
 	//make default texture with one white pixel
-	Texture defaultTexture = MakeTexture(1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(vec4(1,1,0,1)));
-	mTextureList.push_back(defaultTexture);
+	MakeTexture(1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(vec4(1,1,0,1)));
 
+	//load shader for forward render pass
+	mForwardPassShader.LoadShader("../Dryv3r/source/shaders/forwardVert.glsl", "../Dryv3r/source/shaders/forwardFrag.glsl");
+
+	//load shader for render passes
+	mGpassShader.LoadShader("../Dryv3r/source/shaders/Gpass_vert.glsl", "../Dryv3r/source/shaders/Gpass_frag.glsl");
+	mCpassShader.LoadShader("../Dryv3r/source/shaders/Cpass_vert.glsl", "../Dryv3r/source/shaders/Cpass_frag.glsl");
+	InitGpass();
 	return true;
 }
 
@@ -80,16 +84,48 @@ void Dryv3r::Cleanup()
 void Dryv3r::Draw()
 {
 
-	//forward render mode
+	//prep gpass
+	glBindFramebuffer(GL_FRAMEBUFFER, mGpassFrameBuffer);
 	glEnable(GL_DEPTH_TEST);
+	glClearColor(.25f,.25f,.25f,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(mGpassShader.GetProgram());
+
+	//draw the gpass
+	mForwardPassShader.SetUniform("Projection", Shader::MAT4, glm::value_ptr(mCamera.GetProjection()));
+	mForwardPassShader.SetUniform("View", Shader::MAT4, glm::value_ptr(mCamera.GetView()));
+
 	for each (GameObject* object in mObjectsToDraw)
 	{
-		mShader.SetUniform("Model", Shader::MAT4, glm::value_ptr(object->transform.GetTransform()));
-		mShader.SetUniform("albedoTexture", Shader::TEXTURE2D, (void*)&mTextureList[object->diffuse]);
+		mForwardPassShader.SetUniform("Model", Shader::MAT4, glm::value_ptr(object->transform.GetTransform()));
+		mForwardPassShader.SetUniform("Diffuse", Shader::TEXTURE2D, (void*)&mTextureList[object->diffuse]);
 		DrawMesh(mMeshList[object->mesh]);
 	}
 	mObjectsToDraw.clear();
+
+	//cleanup gpass
+	glDisable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	//prep cpass
+	glClearColor(0, 0, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glUseProgram(mCpassShader.GetProgram());
+
+	//draw cpass
+	//frag shader uniforms
+	mCpassShader.SetUniform("Albedo", Shader::TEXTURE2D, (void*)&mTextureList[albedoTexture]);
+	//mCpassShader.SetUniform("Light", Shader::TEXTURE2D, (void*)&mTextureList[albedoTexture]);
+
+	DrawMesh(mMeshList[MESH_ID_QUAD]);
+
+	//cleanup cpass
+	glUseProgram(0);
+	glBindVertexArray(0);
+
 }
 
 void Dryv3r::DrawGameObject(GameObject& gameObject)
@@ -105,9 +141,15 @@ GameObject Dryv3r::GetCube()
 	return newObject;
 }
 
-int Dryv3r::LoadTexture(const char * filePath)
+GameObject Dryv3r::GetQuad()
 {
-	Texture texture;
+	GameObject newObject;
+	newObject.mesh = MESH_ID_QUAD;
+	return newObject;
+}
+
+uint Dryv3r::LoadTexture(const char * filePath)
+{
 	int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 	const char* data = (const char*)stbi_load(filePath, &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
@@ -126,14 +168,13 @@ int Dryv3r::LoadTexture(const char * filePath)
 		return false;
 	}
 
-	texture = MakeTexture(imageWidth, imageHeight, imageFormat, GL_UNSIGNED_BYTE, data);
+	uint texture = MakeTexture(imageWidth, imageHeight, imageFormat, GL_UNSIGNED_BYTE, data);
 	stbi_image_free((void*)data);
-	mTextureList.push_back(texture);
 
-	return mTextureList.size() - 1;
+	return texture;
 }
 
-Mesh Dryv3r::LoadMesh(Geometry& geometry)
+uint Dryv3r::LoadMesh(Geometry& geometry)
 {
 	Mesh newMesh;
 	newMesh.count = geometry.indices.size();
@@ -168,7 +209,8 @@ Mesh Dryv3r::LoadMesh(Geometry& geometry)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return newMesh;
+	mMeshList.push_back(newMesh);
+	return mMeshList.size() - 1;
 }
 
 void Dryv3r::DrawMesh(Mesh & mesh)
@@ -178,7 +220,7 @@ void Dryv3r::DrawMesh(Mesh & mesh)
 	glBindVertexArray(0);
 }
 
-Texture Dryv3r::MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
+uint Dryv3r::MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
 {
 	Texture newTexture;
 	glGenTextures(1, &newTexture.name);
@@ -189,7 +231,8 @@ Texture Dryv3r::MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	return newTexture;
+	mTextureList.push_back(newTexture);
+	return mTextureList.size() - 1;
 }
 
 void Dryv3r::LoadTextureData(Texture & texture, GLint xOffset, GLint yOffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void * pixels)
@@ -203,4 +246,39 @@ void Dryv3r::InitCamera()
 {
 	mCamera.SetPerspectiveProjection(45, (float)mWindow.width / mWindow.height, .1f, 1000.0f);
 	mCamera.SetView(vec3(5), vec3(0), UP.xyz);
+}
+
+void Dryv3r::InitGpass()
+{
+	mGpassFrameBuffer;
+	glGenFramebuffers(1, &mGpassFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mGpassFrameBuffer);
+
+	//make textures
+	albedoTexture = MakeTexture(mWindow.width, mWindow.height, GL_RGB, GL_FLOAT, nullptr);
+	positionTexture = MakeTexture(mWindow.width, mWindow.height, GL_RGB, GL_FLOAT, nullptr);
+	normalTexture = MakeTexture(mWindow.width, mWindow.height, GL_RGB, GL_FLOAT, nullptr);
+	depthTexture = MakeTexture(mWindow.width, mWindow.height, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+	//attach them to frame buffer
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTextureList[albedoTexture].name, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mTextureList[positionTexture].name, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mTextureList[normalTexture].name, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mTextureList[depthTexture].name, 0);
+
+	//draw buffers
+	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, drawBuffers);
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		bool incompleteAttachment = status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
+		bool invalidEnum = status == GL_INVALID_ENUM;
+		bool invalidValue = status == GL_INVALID_VALUE;
+		printf("Framebuffer Error!\n");
+		assert(false);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

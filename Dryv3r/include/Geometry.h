@@ -104,14 +104,25 @@ static Geometry BuildTestTri()
 	return testTri;
 }
 
-/*
-const Vertex QuadVerts[] =
+static Geometry BuildQuad()
 {
-	{ vec4(-1, 1, 0, 1), BACKWARD,  LEFT, vec2(0,1) },
-	{ vec4(1, 1, 0, 1), BACKWARD,  LEFT, vec2(1,1) },
-	{ vec4(1,-1, 0, 1), BACKWARD,  LEFT, vec2(1,0) },
-	{ vec4(-1,-1, 0, 1), BACKWARD,  LEFT, vec2(0,0) },
-};
+	Geometry newQuad;
+	newQuad.vertices.resize(4);
+	newQuad.vertices[0] = { glm::vec4(-1, 1, 0, 1), BACKWARD,  LEFT, glm::vec2(0,1) };
+	newQuad.vertices[1] = { glm::vec4(1, 1, 0, 1), BACKWARD,  LEFT, glm::vec2(1,1) };
+	newQuad.vertices[2] = { glm::vec4(1,-1, 0, 1), BACKWARD,  LEFT, glm::vec2(1,0) };
+	newQuad.vertices[3] = { glm::vec4(-1,-1, 0, 1), BACKWARD,  LEFT, glm::vec2(0,0) };
 
-const unsigned QuadTris[] = { 3,1,0, 3,2,1 };
-*/
+	
+	newQuad.indices.resize(6);
+	newQuad.indices[0] = 3;
+	newQuad.indices[1] = 1;
+	newQuad.indices[2] = 0;
+	newQuad.indices[3] = 3;
+	newQuad.indices[4] = 2;
+	newQuad.indices[5] = 1;
+	
+	return newQuad;
+}
+
+

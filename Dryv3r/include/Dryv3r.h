@@ -52,7 +52,7 @@ public:
 		mPosition = position;
 		mTransform = glm::translate(mTransform, position);
 	}
-	mat4 GetTransform() { return mTransform; }
+	mat4& GetTransform() { return mTransform; }
 
 private:
 	mat4 mTransform;
@@ -82,6 +82,8 @@ struct FrameBuffer
 	GLuint name;
 	Shader shader;
 };
+
+
 
 class Dryv3r
 {
@@ -113,34 +115,44 @@ public:
 	*/
 	static GameObject GetCube();
 
+	static GameObject GetQuad();
+
 	/*
 	Loads a texture from given path and returns reference.
 	*/
-	static int LoadTexture(const char* filePath);
+	static uint LoadTexture(const char* filePath);
 
 	//applytexture
 	//destroytexture
 
 private:
 
-	static const int MESH_ID_CUBE;
-	static const int TEXTURE_ID_DEFAULT;
+	static const uint MESH_ID_CUBE;
+	static const uint MESH_ID_QUAD;
+	static const uint TEXTURE_ID_DEFAULT;
 	
 	static Window mWindow;
 	static std::vector<Mesh> mMeshList;
 	static std::vector<Texture> mTextureList;
 	static std::vector<GameObject*> mObjectsToDraw;
-	static Shader mShader;
+	static Shader mForwardPassShader;
+	static Shader mGpassShader;
+	static Shader mCpassShader;
 	static Camera mCamera;
-	static Texture mTexture;
+	static uint albedoTexture;
+	static uint positionTexture;
+	static uint normalTexture;
+	static uint depthTexture;
 
-	static Mesh LoadMesh(Geometry& geometry);
+	static uint LoadMesh(Geometry& geometry);
 	static void DrawMesh(Mesh& mesh);
+
+	static uint mGpassFrameBuffer;
 	
 	/*
 	returns texture object of given size and format
 	*/
-	static Texture MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
+	static uint MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
 
 	/*
 	Load pixel data into texture
@@ -161,5 +173,5 @@ private:
 	*/
 	static void InitCamera();
 
-
+	static void InitGpass();
 };

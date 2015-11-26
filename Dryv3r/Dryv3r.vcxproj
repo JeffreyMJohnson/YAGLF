@@ -169,8 +169,12 @@
     <ClCompile Include="src\gl_core\gl_core_4_4.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="source\shaders\Cpass_frag.glsl" />
+    <None Include="source\shaders\Cpass_vert.glsl" />
     <None Include="source\shaders\forwardFrag.glsl" />
     <None Include="source\shaders\ForwardVert.glsl" />
+    <None Include="source\shaders\Gpass_frag.glsl" />
+    <None Include="source\shaders\Gpass_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

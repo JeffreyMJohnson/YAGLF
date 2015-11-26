@@ -26,7 +26,6 @@ const bool Shader::LoadShader(const std::string vertexPath, const std::string fr
 		delete[] log;
 		return false;
 	}
-	glUseProgram(mProgram);
 	return true;
 }
 

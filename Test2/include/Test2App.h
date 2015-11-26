@@ -12,4 +12,5 @@ public:
 
 	GameObject testObject;
 	int crateTexture = 0;
+	GameObject test2;
 };
