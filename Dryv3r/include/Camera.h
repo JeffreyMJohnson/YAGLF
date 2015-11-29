@@ -2,6 +2,7 @@
 #include "glm\glm.hpp"
 #include "glm\ext.hpp"
 #include "glm\gtx\transform.hpp"
+#include "Keyboard.h"
 
 using glm::mat4;
 using glm::vec3;
@@ -44,5 +45,6 @@ protected:
 	bool SetView(const float left, const float right, const float bottom, const float top);
 	
 private:
+	const float mCamSpeed = 1.0f;
 	void UpdateFlyCamControls();
 };

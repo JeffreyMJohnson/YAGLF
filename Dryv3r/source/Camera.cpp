@@ -24,7 +24,30 @@ bool Camera::SetPerspectiveProjection(const float fov, const float aspectRatio, 
 
 void Camera::Update(const float deltaTime)
 {
-
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_W) || Keyboard::IsKeyRepeat(Keyboard::KEY_W))
+	{
+		Move(1 * mCamSpeed * deltaTime);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_X) || Keyboard::IsKeyRepeat(Keyboard::KEY_X))
+	{
+		Move(-1 * mCamSpeed * deltaTime);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_A) || Keyboard::IsKeyRepeat(Keyboard::KEY_A))
+	{
+		Slide(-1 * mCamSpeed * deltaTime, 0);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_D) || Keyboard::IsKeyRepeat(Keyboard::KEY_D))
+	{
+		Slide(1 * mCamSpeed * deltaTime, 0);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_E) || Keyboard::IsKeyRepeat(Keyboard::KEY_E))
+	{
+		Slide(0, 1 * mCamSpeed * deltaTime);
+	}
+	if (Keyboard::IsKeyPressed(Keyboard::KEY_C) || Keyboard::IsKeyRepeat(Keyboard::KEY_C))
+	{
+		Slide(0, -1 * mCamSpeed * deltaTime);
+	}
 }
 
 const glm::mat4 Camera::GetWorldTransform()

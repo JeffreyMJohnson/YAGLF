@@ -14,6 +14,7 @@
 #include "Shader.h"
 #include "Camera.h"
 
+
 #include <iostream>
 #include <string>
 #include <assert.h>
@@ -33,6 +34,22 @@ struct Window
 	int width = 0;
 	const char* title;
 	GLFWwindow* handle = nullptr;
+};
+
+class Timer
+{
+	float mTotalTime = 0;
+	float mDeltaTime = 0;
+
+public:
+	void Update()
+	{
+		float temp = mTotalTime;
+		mTotalTime = glfwGetTime();
+		mDeltaTime = mTotalTime - temp;
+	}
+	float GetTotalTime() { return mTotalTime; }
+	float GetDeltaTime() { return mDeltaTime; }
 };
 
 struct Mesh
@@ -74,8 +91,6 @@ public:
 	uint diffuse = 0;
 	
 };
-
-
 
 struct FrameBuffer
 {
@@ -135,6 +150,7 @@ private:
 	static const uint TEXTURE_ID_DEFAULT;
 	
 	static Window mWindow;
+	static Timer mTimer;
 	static std::vector<Mesh> mMeshList;
 	static std::vector<Texture> mTextureList;
 	static std::vector<GameObject*> mObjectsToDraw;

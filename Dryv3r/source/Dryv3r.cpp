@@ -1,6 +1,7 @@
 #include "Dryv3r.h"
 
 Window Dryv3r::mWindow;
+Timer Dryv3r::mTimer;
 std::vector<Mesh> Dryv3r::mMeshList;
 std::vector<Texture> Dryv3r::mTextureList;
 std::vector<GameObject*> Dryv3r::mObjectsToDraw;
@@ -58,7 +59,7 @@ bool Dryv3r::Init(const int width, const int height, const char * title)
 	LoadMesh(BuildQuad());
 
 	InitCamera();
-
+	Keyboard::Init();
 	//make default texture with one white pixel
 	MakeTexture(1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(vec4(1, 1, 0, 1)));
 
@@ -81,7 +82,10 @@ bool Dryv3r::Update()
 	if (glfwWindowShouldClose(mWindow.handle)) return false;
 	glfwSwapBuffers(mWindow.handle);
 	glfwPollEvents();
-
+	//update the timer
+	mTimer.Update();
+	//update camera
+	mCamera.Update(mTimer.GetDeltaTime());
 	return true;
 }
 
