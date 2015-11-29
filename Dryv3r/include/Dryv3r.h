@@ -86,7 +86,7 @@ struct FrameBuffer
 struct DirectionalLight
 {
 	vec3 color = vec3(0,0,0);
-	vec3 direction = vec3(0,0,1);
+	vec3 direction = vec3(0,1,0);
 };
 
 class Dryv3r
@@ -126,8 +126,7 @@ public:
 	*/
 	static uint LoadTexture(const char* filePath);
 
-	//applytexture
-	//destroytexture
+	static uint loadMesh(const char* filePath);
 
 private:
 

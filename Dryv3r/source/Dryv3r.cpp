@@ -212,6 +212,49 @@ uint Dryv3r::LoadTexture(const char * filePath)
 	return texture;
 }
 
+uint Dryv3r::loadMesh(const char * filePath)
+{
+	bool success = true;
+	//find extension
+	std::string sPath(filePath);
+	std::string ext = sPath.substr(sPath.find_last_of('.'));
+	Geometry geometry;
+	if (ext == ".fbx")
+	{
+		FBXFile file;
+		success = file.load(filePath, FBXFile::UNITS_METER, false, false, true);
+		if (!success)
+		{
+			std::cout << "Error loading FBX file:\n";
+		}
+		else
+		{
+			//hardcoding to use single mesh, can loop here if needed.
+			FBXMeshNode* mesh = file.getMeshByIndex(0);
+			geometry.vertices.resize(mesh->m_vertices.size());
+
+			for (int i = 0; i < mesh->m_vertices.size(); i++)
+			{
+				auto xVert = mesh->m_vertices[i];
+				geometry.vertices[i].position = xVert.position;
+				geometry.vertices[i].normal = xVert.normal;
+				geometry.vertices[i].UV = xVert.texCoord1;
+			}
+
+			geometry.indices = mesh->m_indices;
+
+			file.unload();
+		}
+	}
+	else
+	{
+		std::cout << "Unsupported format. Only support .obj or .fbx files.\n";
+		success = false;
+	}
+	assert(success);
+	return LoadMesh(geometry);
+}
+
 uint Dryv3r::LoadMesh(Geometry& geometry)
 {
 	Mesh newMesh;

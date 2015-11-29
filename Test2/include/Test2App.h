@@ -13,4 +13,6 @@ public:
 	GameObject testObject;
 	int crateTexture = 0;
 	GameObject test2;
+	uint mesh;
+	uint spearDiffuse;
 };

@@ -12,6 +12,10 @@ bool Test2App::StartUp()
 	crateTexture = dvr::LoadTexture("../resources/textures/crate.png");
 	testObject.diffuse = crateTexture;
 	test2.diffuse = crateTexture;
+	mesh = dvr::loadMesh("../resources/models/fbx/soulspear.fbx");
+	spearDiffuse = dvr::LoadTexture("../resources/textures/soulspear/soulspear_diffuse.tga");
+	testObject.mesh = mesh;
+	testObject.diffuse = spearDiffuse;
 	return true;
 }
 
