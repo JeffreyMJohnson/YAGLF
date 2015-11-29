@@ -14,15 +14,6 @@ void main()
 {
 	vec3 light = texture(Light, vTexCoord).rgb;
 	vec3 albedo = texture(Albedo, vTexCoord).rgb;
-	
-	if (OutputDebugTexture)
-	{
-		FragColor = texture(DebugTexture, vTexCoord);
-	}
-	else
-	{
-		//FragColor = vec4(albedo * light, 1);
-		FragColor = vec4(albedo,1);
-	}
-	
+	FragColor = vec4(albedo * light, 1);
+		
 }

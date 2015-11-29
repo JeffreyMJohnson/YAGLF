@@ -83,7 +83,11 @@ struct FrameBuffer
 	Shader shader;
 };
 
-
+struct DirectionalLight
+{
+	vec3 color = vec3(0,0,0);
+	vec3 direction = vec3(0,0,1);
+};
 
 class Dryv3r
 {
@@ -137,17 +141,22 @@ private:
 	static std::vector<GameObject*> mObjectsToDraw;
 	static Shader mForwardPassShader;
 	static Shader mGpassShader;
+	static Shader mLPassShader;
 	static Shader mCpassShader;
 	static Camera mCamera;
-	static uint albedoTexture;
-	static uint positionTexture;
-	static uint normalTexture;
-	static uint depthTexture;
+	static uint mAlbedoTexture;
+	static uint mPositionTexture;
+	static uint mNormalTexture;
+	static uint mDepthTexture;
+	static uint mLightTexture;
+	static DirectionalLight mDirectionalLight;
 
 	static uint LoadMesh(Geometry& geometry);
 	static void DrawMesh(Mesh& mesh);
 
+	//frame buffers
 	static uint mGpassFrameBuffer;
+	static uint mLightPassFrameBuffer;
 	
 	/*
 	returns texture object of given size and format
@@ -174,4 +183,6 @@ private:
 	static void InitCamera();
 
 	static void InitGpass();
+
+	static void InitLightPass();
 };

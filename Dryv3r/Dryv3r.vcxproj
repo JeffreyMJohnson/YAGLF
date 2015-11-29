@@ -175,6 +175,8 @@
     <None Include="source\shaders\ForwardVert.glsl" />
     <None Include="source\shaders\Gpass_frag.glsl" />
     <None Include="source\shaders\Gpass_vert.glsl" />
+    <None Include="source\shaders\Lpass_D_frag.glsl" />
+    <None Include="source\shaders\Lpass_D_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
