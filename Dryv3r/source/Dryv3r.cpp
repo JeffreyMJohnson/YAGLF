@@ -92,25 +92,22 @@ void Dryv3r::Draw()
 	glUseProgram(mGpassShader.GetProgram());
 
 	//draw the gpass
-	mForwardPassShader.SetUniform("Projection", Shader::MAT4, glm::value_ptr(mCamera.GetProjection()));
-	mForwardPassShader.SetUniform("View", Shader::MAT4, glm::value_ptr(mCamera.GetView()));
+	mGpassShader. SetUniform("Projection", Shader::MAT4, glm::value_ptr(mCamera.GetProjection()));
+	mGpassShader. SetUniform("View", Shader::MAT4, glm::value_ptr(mCamera.GetView()));
 
 	for each (GameObject* object in mObjectsToDraw)
 	{
-		mForwardPassShader.SetUniform("Model", Shader::MAT4, glm::value_ptr(object->transform.GetTransform()));
-		mForwardPassShader.SetUniform("Diffuse", Shader::TEXTURE2D, (void*)&mTextureList[object->diffuse]);
+		mGpassShader. SetUniform("Model", Shader::MAT4, glm::value_ptr(object->transform.GetTransform()));
+		mGpassShader. SetUniform("Diffuse", Shader::TEXTURE2D, (void*)&mTextureList[object->diffuse]);
 		DrawMesh(mMeshList[object->mesh]);
 	}
 	mObjectsToDraw.clear();
 
 	//cleanup gpass
 	glDisable(GL_DEPTH_TEST);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glUseProgram(0);
-	glBindVertexArray(0);
 
 	//prep cpass
-	glClearColor(0, 0, 0, 0);
+	glClearColor(1, 0, 0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(mCpassShader.GetProgram());
@@ -217,7 +214,6 @@ void Dryv3r::DrawMesh(Mesh & mesh)
 {
 	glBindVertexArray(mesh.vao);
 	glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
 }
 
 uint Dryv3r::MakeTexture(GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
@@ -250,21 +246,62 @@ void Dryv3r::InitCamera()
 
 void Dryv3r::InitGpass()
 {
+	/*
+	 "GPassAlbedo","GPassPosition","GPassNormal","GPassDepth" };
+	const unsigned gpassDepths[] = { GL_RGB8,GL_RGB32F,GL_RGB32F,GL_DEPTH_COMPONENT
+	*/
 	mGpassFrameBuffer;
 	glGenFramebuffers(1, &mGpassFrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, mGpassFrameBuffer);
 
 	//make textures
+	/*
 	albedoTexture = MakeTexture(mWindow.width, mWindow.height, GL_RGB, GL_FLOAT, nullptr);
 	positionTexture = MakeTexture(mWindow.width, mWindow.height, GL_RGB, GL_FLOAT, nullptr);
 	normalTexture = MakeTexture(mWindow.width, mWindow.height, GL_RGB, GL_FLOAT, nullptr);
 	depthTexture = MakeTexture(mWindow.width, mWindow.height, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	*/
+	Texture albedo{ 0, mWindow.width, mWindow.height };
+	glGenTextures(1, &albedo.name);
+	glBindTexture(GL_TEXTURE_2D, albedo.name);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, mWindow.width, mWindow.height);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, albedo.name, 0);
+	mTextureList.push_back(albedo);
+	albedoTexture = mTextureList.size() - 1;
 
-	//attach them to frame buffer
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTextureList[albedoTexture].name, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mTextureList[positionTexture].name, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mTextureList[normalTexture].name, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mTextureList[depthTexture].name, 0);
+	Texture position{ 0, mWindow.width, mWindow.height };
+	glGenTextures(1, &position.name);
+	glBindTexture(GL_TEXTURE_2D, position.name);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, mWindow.width, mWindow.height);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, position.name, 0);
+	mTextureList.push_back(position);
+	positionTexture = mTextureList.size() - 1;
+
+	Texture normal{ 0, mWindow.width, mWindow.height };
+	glGenTextures(1, &normal.name);
+	glBindTexture(GL_TEXTURE_2D, normal.name);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, mWindow.width, mWindow.height);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, normal.name, 0);
+	mTextureList.push_back(normal);
+	normalTexture = mTextureList.size() - 1;
+
+	Texture depth{ 0, mWindow.width, mWindow.height };
+	glGenTextures(1, &depth.name);
+	glBindTexture(GL_TEXTURE_2D, depth.name);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, mWindow.width, mWindow.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth.name, 0);
+	mTextureList.push_back(depth);
+	depthTexture = mTextureList.size() - 1;
 
 	//draw buffers
 	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -281,4 +318,5 @@ void Dryv3r::InitGpass()
 		assert(false);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

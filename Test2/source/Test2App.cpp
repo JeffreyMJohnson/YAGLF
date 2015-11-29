@@ -11,7 +11,7 @@ bool Test2App::StartUp()
 	test2.transform.GetTransform() = glm::translate(vec3(-2, 0, 2));
 	crateTexture = dvr::LoadTexture("../resources/textures/crate.png");
 	testObject.diffuse = crateTexture;
-	test2.diffuse = crateTexture;
+	//test2.diffuse = crateTexture;
 	return true;
 }
 

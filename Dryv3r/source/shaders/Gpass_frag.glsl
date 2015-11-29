@@ -9,7 +9,7 @@ layout(location = 1) out vec3 gpassPosition;
 layout(location = 2) out vec3 gpassNormal;
 
 
-uniform bool IsTexture = false;//debug this needs to be true
+uniform bool IsTexture = true;//debug this needs to be true
 uniform sampler2D Diffuse;
 
 void main() 
