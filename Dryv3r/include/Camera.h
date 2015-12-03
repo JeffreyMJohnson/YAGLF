@@ -45,6 +45,6 @@ protected:
 	bool SetView(const float left, const float right, const float bottom, const float top);
 	
 private:
-	const float mCamSpeed = 1.0f;
+	const float mCamSpeed = 5.0f;
 	void UpdateFlyCamControls();
 };

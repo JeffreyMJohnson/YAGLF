@@ -58,9 +58,15 @@ void Shader::SetUniform(const char * name, const UniformType type, const void * 
 		glUniform1ui(location, *(GLuint*)value);
 		break;
 	case TEXTURE2D:
-		glUniform1i(location, 0);
+		glUniform1i(location, count);
 		glActiveTexture(GL_TEXTURE0 + count);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint*)value);
+		break;
+	case BOOL:
+		glUniform1i(location, *(GLboolean*)value);
+		break;
+	default:
+		assert(false && "should bad uniform type.");
 	}
 }
 

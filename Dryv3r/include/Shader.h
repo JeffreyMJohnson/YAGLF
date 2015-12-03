@@ -15,6 +15,7 @@ class Shader
 public:
 	enum UniformType
 	{
+		BOOL,
 		MAT4,
 		VEC4,
 		VEC3,

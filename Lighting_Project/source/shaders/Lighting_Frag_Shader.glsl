@@ -11,6 +11,7 @@ uniform vec3 cameraPosition = vec3(10,10,10);
 uniform float specPower = 128;
 
 
+
 void main() 
 {
 	float diffuse = max(0, dot( normalize(vNormal.xyz), lightDirection ) ); 

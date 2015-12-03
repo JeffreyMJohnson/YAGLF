@@ -108,6 +108,7 @@ static Geometry BuildQuad()
 {
 	Geometry newQuad;
 	newQuad.vertices.resize(4);
+
 	newQuad.vertices[0] = { glm::vec4(-1, 1, 0, 1), BACKWARD,  LEFT, glm::vec2(0,1) };
 	newQuad.vertices[1] = { glm::vec4(1, 1, 0, 1), BACKWARD,  LEFT, glm::vec2(1,1) };
 	newQuad.vertices[2] = { glm::vec4(1,-1, 0, 1), BACKWARD,  LEFT, glm::vec2(1,0) };

@@ -19,6 +19,8 @@ uint Dryv3r::mGpassFrameBuffer = 0;
 uint Dryv3r::mLightPassFrameBuffer = 0;
 DirectionalLight Dryv3r::mDirectionalLight;
 
+bool Dryv3r::useDirectionalLight = true;
+
 const uint Dryv3r::MESH_ID_CUBE = 0;
 const uint Dryv3r::MESH_ID_QUAD = 1;
 const uint Dryv3r::TEXTURE_ID_DEFAULT = 0;
@@ -60,8 +62,9 @@ bool Dryv3r::Init(const int width, const int height, const char * title)
 
 	InitCamera();
 	Keyboard::Init();
+
 	//make default texture with one white pixel
-	MakeTexture(1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(vec4(1, 1, 0, 1)));
+	MakeTexture(1, 1, GL_RGBA, GL_FLOAT, glm::value_ptr(vec4(.25f, .25f, .25f, 1)));
 
 	//load shader for forward render pass
 	mForwardPassShader.LoadShader("../Dryv3r/source/shaders/forwardVert.glsl", "../Dryv3r/source/shaders/forwardFrag.glsl");
@@ -118,7 +121,7 @@ void Dryv3r::Draw()
 
 	//cleanup gpass
 	glDisable(GL_DEPTH_TEST);
-	
+
 
 	//prep lightpass
 	const float globalSpecPower = 128;
@@ -161,6 +164,7 @@ void Dryv3r::Draw()
 	//frag shader uniforms
 	mCpassShader.SetUniform("Albedo", Shader::TEXTURE2D, &mTextureList[mAlbedoTexture].name, 0);
 	mCpassShader.SetUniform("Light", Shader::TEXTURE2D, &mTextureList[mLightTexture].name, 1);
+	mCpassShader.SetUniform("UseLight", Shader::BOOL, &useDirectionalLight, 0);
 
 	DrawMesh(mMeshList[MESH_ID_QUAD]);
 
@@ -259,6 +263,16 @@ uint Dryv3r::loadMesh(const char * filePath)
 	return LoadMesh(geometry);
 }
 
+void Dryv3r::SetDirectionalLightDirection(vec3 direction)
+{
+	mDirectionalLight.direction = direction;
+}
+
+void Dryv3r::SetDirectionalLightColor(vec3 color)
+{
+	mDirectionalLight.color = color;
+}
+
 uint Dryv3r::LoadMesh(Geometry& geometry)
 {
 	Mesh newMesh;
@@ -329,7 +343,7 @@ void Dryv3r::LoadTextureData(Texture & texture, GLint xOffset, GLint yOffset, GL
 void Dryv3r::InitCamera()
 {
 	mCamera.SetPerspectiveProjection(45, (float)mWindow.width / mWindow.height, .1f, 1000.0f);
-	mCamera.SetView(vec3(5), vec3(0), UP.xyz);
+	mCamera.SetView(glm::vec3(0, 2, 10), glm::vec3(0, 2, 0), UP.xyz);
 }
 
 void Dryv3r::InitGpass()

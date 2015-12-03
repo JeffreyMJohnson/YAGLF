@@ -81,6 +81,19 @@ float PCF2(sampler2D depths, vec2 size, vec2 uv, float compare, float bias)
 	return result / 9.0;
 }
 
+float ComputeDiffuse(vec3 normal)
+{
+	return max(dot(normal, Directional.Direction), 0);
+}
+
+float ComputeSpecular(vec3 position, vec3 normal)
+{
+	vec3 CamViewPosition = (CameraView * vec4(CameraPosition, 1)).xyz;
+	vec3 E = normalize(CamViewPosition - position); //Eye vector
+	vec3 R = reflect(-Directional.Direction, normal);//reflection vector
+	return pow(max(dot(E, R), 0), SpecPower);//specular
+}
+
 void main()
 {
 	vec3 normal = normalize(texture(NormalMap, vTexCoord).xyz);
@@ -90,19 +103,17 @@ void main()
 	//mat4 lightViewProjection = TextureSpaceOffset * Directional.Projection * Directional.View;
 	//vec4 shadowCoord = lightViewProjection * inverse(CameraView) * vec4(position, 1);
 
-	//compute diffuse lighting
-	vec3 lightDirection = Directional.Direction;
-	float d = max(dot(normal, lightDirection), 0); //lambertian term
+
 
 	//float visibility = Texture2DShadowLERP(ShadowMap, ShadowMapSize, shadowCoord.xy, shadowCoord.z, ShadowBias);
 	//float visibility = PCF(ShadowMap, ShadowMapSize, shadowCoord.xy, shadowCoord.z, ShadowBias);
 	//float visibility = PCF2(ShadowMap, ShadowMapSize, shadowCoord.xy, shadowCoord.z, ShadowBias);
 
+	//compute diffuse lighting
+	float d = ComputeDiffuse(normal); //lambertian term
 	//compute specular lighting
-	vec3 CamViewPosition = (CameraView * vec4(CameraPosition, 1)).xyz;
-	vec3 E = normalize(CamViewPosition - position); //Eye vector
-	vec3 R = reflect(-lightDirection, normal);//reflection vector
-	float s = pow(max(dot(E, R), 0), SpecPower);//specular
+	float s = ComputeSpecular(position, normal);//specular
 
-	LightOutput = (Directional.Color * d) +(Directional.Color * s);
+	LightOutput = (Directional.Color * d) + (Directional.Color * s);
+	//LightOutput = normal;
 }

@@ -100,8 +100,14 @@ struct FrameBuffer
 
 struct DirectionalLight
 {
-	vec3 color = vec3(0,0,0);
+	vec3 color = vec3(1,1,1);
 	vec3 direction = vec3(0,1,0);
+};
+
+struct PointLight
+{
+	vec3 position;
+	vec3 color;
 };
 
 class Dryv3r
@@ -141,7 +147,18 @@ public:
 	*/
 	static uint LoadTexture(const char* filePath);
 
+	/*
+	Loads a mesh from given file path and returns reference.
+	*/
 	static uint loadMesh(const char* filePath);
+
+	static void SetDirectionalLightDirection(vec3 direction);
+	static void SetDirectionalLightColor(vec3 color);
+
+	static float GetDeltaTime() { return mTimer.GetDeltaTime(); }
+
+	//switches	
+	static bool useDirectionalLight;
 
 private:
 
@@ -158,13 +175,14 @@ private:
 	static Shader mGpassShader;
 	static Shader mLPassShader;
 	static Shader mCpassShader;
-	static Camera mCamera;
+	static Camera mCamera;//only support single camera in rev 1
+	static DirectionalLight mDirectionalLight; //single directional light
+	//texture maps created during render passes
 	static uint mAlbedoTexture;
 	static uint mPositionTexture;
 	static uint mNormalTexture;
 	static uint mDepthTexture;
 	static uint mLightTexture;
-	static DirectionalLight mDirectionalLight;
 
 	static uint LoadMesh(Geometry& geometry);
 	static void DrawMesh(Mesh& mesh);
